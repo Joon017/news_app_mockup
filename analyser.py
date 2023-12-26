@@ -22,9 +22,6 @@ CORS(app)
 openai_client = OpenAI(api_key = "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")
 
 
-
-
-
 # CONNECT TO MONGO
 mongo_client = pymongo.MongoClient("mongodb+srv://ckoh2021:MGk9TVzCl4RgRYHN@cluster0.euvgj72.mongodb.net/")
 
@@ -885,7 +882,7 @@ def upload_articles():
 
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5002, debug=True)
 
 
 
