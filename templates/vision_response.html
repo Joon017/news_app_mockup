@@ -204,21 +204,17 @@
 
         <h3> Upload a picture and enter your prompt </h3>
         <p>Our system uses GPT-4 Vision to provide you a suitable response.</p>
+        
 
 <div class="container mt-5">
 
     <form method="POST" enctype="multipart/form-data" action="http://localhost:5003/upload_vision">
-
-        <!-- UPLOADING IMAGES -->
-        <label class="form-label" for="uploaded_image">Upload your image here:</label>
+        <label class="form-label" for="customFile">Upload your image here:</label>
         <input type="file" name="uploaded_image" class="form-control" id="uploaded_image" accept="image/*"/>
         <br>
-        
-        <!-- USER PROMPT -->
+    
         <label class="form-label" for="user_prompt">Enter your query here:</label>
         <input type="text" name="user_prompt" class="form-control" id="user_prompt" placeholder="Enter your query here:">
-
-        <!-- SUBMIT BUTTON -->
         <input type="submit" value="Ask TrendyAI" class="btn btn-outline-primary mt-3 active">
     </form>
     <br>    
@@ -226,6 +222,12 @@
     <br>
     <br>
 
+    <h2>Uploaded Photo:</h2>
+
+    <img src="../static/images/uploads/Nprofile2.jpg" alt="">
+
+    <br>
+    <br>
 
     <label class="form-label" for="customFile">System Answer:</label>
     <textarea type="" class="form-control" id="gpt_answer" rows="20" placeholder="The Answer To Your Prompt..."></textarea>
