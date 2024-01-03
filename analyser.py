@@ -5,6 +5,9 @@ import json
 import pymongo
 from bson import ObjectId
 from openai import OpenAI
+from sentence_transformers import SentenceTransformer
+
+embedding_model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
 
 # IMPORT CHROMADB
 import chromadb
@@ -19,7 +22,7 @@ app = Flask(__name__)
 CORS(app)
 
 # OPENAI
-openai_client = OpenAI(api_key = "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")
+openai_client = OpenAI(api_key = "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")
 
 
 # CONNECT TO MONGO
@@ -35,7 +38,7 @@ articles_collection = news_scraper_db.get_collection('Articles')
 # UPLOAD'S RECEIVED ARTICLES FROM SCRAPER TO THE DB
 # FOR FUTURE USE - TO DELETE ARTICLES WHICH ARE OUTDATED IN THE DB 
 
-@app.route("/upload", methods=['POST'])
+@app.route("/upload", methods=['GET', 'POST'])
 def upload_articles():
 
     # FOF EVENTUAL IMPLEMENTATION 
@@ -133,16 +136,6 @@ def upload_articles():
     "article_url": "https://venturebeat.com/ai/a-free-ai-image-dataset-removed-for-child-sex-abuse-images-has-come-under-fire-before/",
     "publish_date": "20-12-2023",
     "content": "Are you ready to bring more awareness to your brand? Consider becoming a sponsor for The AI Impact Tour. Learn more about the opportunities here . A massive open-source AI dataset, LAION-5B, which has been used to train popular AI text-to-image generators like Stable Diffusion and Google\u2019s Imagen, contains at least 1,008 instances of child sexual abuse material, a new report from the Stanford Internet Observatory found \u2014 with thousands more instances suspected. The Stanford Internet Observatory is a program of the Cyber Policy Center , a joint initiative of the Freeman Spogli Institute for International Studies and Stanford Law School . The LAION-5B dataset, which was released in March 2022 and contains more than 5 billion images and related captions from the internet, may also include thousands of additional pieces of suspected child sexual abuse material, or CSAM, according to the report. The report warned that CSAM material in the dataset could enable AI products built on this data to output new and potentially realistic child abuse content. In response, LAION told 404 Media on Tuesday that out of \u201can abundance of caution,\u201d it was taking down its datasets temporarily \u201cto ensure they are safe before republishing them.\u201d LAION datasets have come under fire before But this is not the first time LAION\u2019s image datasets has come under fire. As far back as October 2021, cognitive scientist Abeba Birhane, currently a senior fellow in trustworthy AI at Mozilla, published a paper, Multimodal datasets: misogyny, pornography, and malignant stereotypes , which examined LAION-400M, an earlier image dataset. It found that the dataset contained \u201ctroublesome and explicit images and text pairs of rape, pornography, malign stereotypes, racist and ethnic slurs, and other extremely problematic content.\u201d VB Event The AI Impact Tour Connect with the enterprise AI community at VentureBeat\u2019s AI Impact Tour coming to a city near you! Learn More In September 2022, there was an instance of an artist discovering private medical record photos taken by her doctor in 2013 referenced in the LAION-5B image dataset. The artist, Lapine, discovered the photos on the Have I Been Trained website, which allows people to look for their work in popular AI training datasets. And a class-action lawsuit, Andersen et al. v. Stability AI LTD et al. , was brought by visual artists Sarah Andersen, Kelly McKernan, and Karla Ortiz against Stability AI, Midjourney, and DeviantArt in January 2023. While LAION was not sued, it was named in the lawsuit, which said that \u201cStability is alleged to have \u2018downloaded of otherwise acquired copies of billions of copyrighted images without permission to create Stable Diffusion\u2019 known as \u2018training images.\u2019 Over five billion images were scraped (and thereby copied) from the internet for training purposes for Stable Diffusion through the services of an organization (LAION, Large-Scale Artificial Intelligence Open Network) paid by Stability.\u201d Ortiz, an award-winning artist who has worked for Industrial Light & Magic (ILM ), Marvel Film Studios , Universal Studios and HBO , spoke at a virtual FTC panel in October and discussed the LAION-5B dataset. \u201cLAION-5B is a dataset that contains 5.8 billion text and image pairs, which\u2026includes the entirety of my work and the work of almost everyone I know,\u201d she said. \u201cBeyond intellectual property, data sets like LAION-5B also contain deeply concerning material like private medical records, non consensual pornography, images of children, even social media pictures of our actual faces.\u201d AI pioneer Andrew Ng has criticized removing access to LAION As VentureBeat reported in September , Andrew Ng, former co-founder and head of Google Brain, has made no bones about the fact that the latest advances in machine learning have depended on free access to large quantities of data, much of it scraped from the open internet. In an issue of his DeepLearning.ai newsletter, The Batch, titled \u201c It\u2019s Time to Update Copyright for Generative AI , he wrote that a lack of access to massive popular datasets such as Common Crawl , The Pile , and LAION would put the brakes on progress or at least radically alter the economics of current research. \u201cThis would degrade AI\u2019s current and future benefits in areas such as art, education, drug development, and manufacturing, to name a few,\u201d he said. And in the June 7 edition of The Batch, Ng admitted that the AI community is entering an era in which it will be called upon to be more transparent in our collection and use of data. \u201cWe shouldn\u2019t take resources like LAION for granted, because we may not always have permission to use them,\u201d he wrote. LAION was founded to create an open-source dataset Hamburg, Germany-based high school teacher and trained actor Christoph Schuhmann helped found LAION , short for \u201cLarge-scale AI Open Network. According to an April 2023 Bloomberg article , Schuhmann was hanging out on a Discord server for AI enthusiasts and was inspired by the first iteration of OpenAI\u2019s DALL-E to make sure there would be an open-source dataset to help train image-to-text diffusion models. \u201cWithin a few weeks, Schuhmann and his colleagues had 3 million image-text pairs. After three months, they released a dataset with 400 million pairs,\u201d the Bloomberg article said. \u201cThat number is now over 5 billion, making LAION the largest free dataset of images and captions.\u201d Since then, the nonprofit LAION has weighed in publicly on open-source AI topics: For example, after an open letter in March 2023 calling for AI \u2018pause\u2019 heated up a fierce debate around risks vs. hype, LAION called for accelerating research and establishing a joint, international computing cluster for large-scale open-source artificial intelligence models. LAION was scraped from visual data on shopping sites LAION was scraped, in part, by using visual data from online shopping services such as Shopify, eBay and Amazon. In a recent paper from the Allen Institute for AI called \u201c What\u2019s in My Big Data? \u201c, researchers studied LAION-2B-en, a subset of LAION-5B, which is 2.32 billion photo captions in English. It found, for example, that 6% of the documents in LAION-2B-en were from Shopify. \u201cThat was a surprise because no one had looked at that before,\u201d Jesse Dodge, a research scientist at the Allen Institute for AI, told VentureBeat in November. \u201cNo one had been able to say like, what parts of the internet is the most images of text from in this dataset?\u201d VentureBeat's mission is to be a digital town square for technical decision-makers to gain knowledge about transformative enterprise technology and transact. Discover our Briefings.",
-    "scraped_date": "22-12-2023"
-  },
-  {
-    "title": "Never judge your player and other game design tips from Warren Spector",
-    "topic": "Generative AI",
-    "source": "VentureBeat",
-    "source_url": "https://venturebeat.com/",
-    "article_url": "https://venturebeat.com/gaming-business/never-judge-your-player-and-other-game-design-tips-from-warren-spector/",
-    "publish_date": "20-12-2023",
-    "content": "Do you want to get the latest gaming industry news straight to your inbox? Sign up for our daily and weekly newsletters here . Warren Spector recently gave a talk at the DevGamm gaming event in Cascais, Portugal. He talked about \u201cThoughts I Live By\u201d in his craft of game development, which he has done for more than 40 years . The 68-year-old game designer has left his mark across gaming with immersive sim games, which give players a wide array of choices. At Looking Glass Studios, he was involved in the creation of titles like Ultima Underworld, Ultima Underworld II, System Shock, Thief: The Dark Project and Deus Ex (while at Ion Storm). At his own studio, Junction Point Studios, Spector created Epic Mickey for Disney Interactive. He is currently the creative director at OtherSide Entertainment . He grew up wanting to be a film critic and played lots of board games like the Avalon Hill games, Ogre and he became friends with sci-fi writers who were Dungeons & Dragons fans. He also became a computer game nut. Spector has strong opinions when it comes to game design. He\u2019s not a fan of games on rails or narratives where the outcomes must strictly follow a single storyline. Rather, he is a fan of emergent gameplay, where a player has an objective and has many different ways to achieve that objective. The player must live with the consequences of those choices. We talked about his tips for emerging game designers. That included \u2018Never judge your player.\u2019 Here\u2019s an edited transcript of our interview. Warren Spector spoke at the DevGamm event in Cascais, Portugal. GamesBeat: How did your talk go? Warren Spector: You know, it\u2019s funny. People ask me how things went, and I never know. I\u2019m into measurable success. So what I always say, because it\u2019s true, is, you know, I had fun. It was enjoyable. It was interesting though, because it\u2019s a talk I\u2019ve never given before. And it was completely different in structure. Usually, I like to have a little narrative, you know? And one slide leads naturally into the next. And this time, around my studios, I post posters that describe who we are and what we do, and why we do it and how we do it. And so each slide was a different poster. So it was like, here\u2019s what this means, here\u2019s what this means, here\u2019s what this means. You know, and people seemed to like it. It was an interesting experiment. GamesBeat: What did you call it? Spector: It was called Thoughts I Live By because I wanted it to be an example of how you can communicate with a team and partners, exactly what you\u2019re about. And I didn\u2019t want people to think, okay, I\u2019ve got to adopt Warren\u2019s standards or Warren\u2019s ideas. It\u2019s about finding your philosophy. Finding what\u2019s important to you. Because it helps in hiring. Do you buy into this? Yes or no? Hey, potential funding partner. Do you want this game? Yes or no? Hey, potential employee, do you want to work here? Because I don\u2019t want to have to fight people. I\u2019ve had plenty of people say, why don\u2019t you just make a shooter? Or why don\u2019t you just make a platformer? I don\u2019t want to have to fight that fight. So these posters actually make that point. GamesBeat: And what were some of the game design philosophies there? Spector: Things like, \u2018Never judge your player.\u2019 In my games, players get to decide how to deal with challenges and problems. You\u2019re not allowed to say the word \u2018puzzle\u2019 in my studio. That implies a designer came up with something that has one solution. And the job of the player is to solve the puzzle. My whole philosophy is you see a challenge. And using your tools and the world\u2019s depth and the objects in the world that are deeply simulated [can be used to] solve the problem in the real world. There\u2019s never just one way. So there\u2019s always another way. That\u2019s another one of the posters. Maybe the most important ones are health, family, and work, in that order. If you\u2019re not taking care of your health, you can\u2019t take care of your family. If you\u2019re not taking care of your family, who cares about work? We don\u2019t live in the world I grew up in where people sleep under their desks and drive home at three in the morning and have no idea how they got there. Don\u2019t do laundry for two weeks. You know, we don\u2019t live in that world, and we shouldn\u2019t live in that world. And there are 45 posters. And well, what I do is I try to pick the ones most relevant to the time or the project. And people still complain, but too bad. They\u2019re going to see those posters. Warren Spector at the Dice Summit in 2016. GamesBeat: And then when did you start that? Like, was that many years ago? Spector: Well, I used to write manifestos. I wrote a 12-page manifesto that no one would read. Apparently game developers don\u2019t like reading. And I gradually whittled it down into two words. Playstyle Matters. How you decide to play makes a difference. And you create. Every player is a storyteller. That\u2019s another one of the posters. The goal in my games is not to exercise skills so much as it is to create a unique experience. So I wrote manifestos. The poster idea came to me when I was teaching it at the University of Texas. I built a game development program there. And I started posting individual things there. And then it was very rudimentary. And when I started my studio OtherSide Entertainment in Austin, Texas, that was when I really said I\u2019ve got to keep this in front of people, top of mind. So that was seven. Oh my God, it was seven years ago. GamesBeat: Now from just what I remember from the past, it was all about emergent gameplay. You wanted to present that challenge and then have the players solve it in any way that they wanted, or come up with ingenious ways to do it that you maybe never expected. And so it\u2019s not at all on rails. It\u2019s a play space. Spector: Yeah. That\u2019s the only kind of game I want to make. And the only kind of game I will make. I\u2019ve said for years. This is a well-practiced line. I make the games I want to make the way I want to make them. If you don\u2019t want that, let\u2019s part ways now and stay friends. You\u2019re not going to change me. So I\u2019ve been doing this for 40 years, and the summary of what I\u2019ve been trying to do is recapture the feeling of playing Dungeons of Dragons that I got in 1978, the first time I played. It\u2019s about players telling stories together. With my team and as the Dungeon Masters, we create the situations. But it\u2019s up to you to figure out how to deal with them. GamesBeat: So where do you think that worked out the best? Spector: In terms of individual games, I mean, there\u2019s been a progression. I\u2019ve been making the same game over and over again for 40 years. I mean, let\u2019s face it, the content changes. But that underlying philosophy is there. And it\u2019s been there since Paul Neurath, my partner at OtherSide, came to Origin and showed us the tech demo that became Ultima Underworld. I looked at that and said, \u2018This is the tool.\u2019 I can use this. The world just changed. So Underworld is the grandfather of it all. The most successful, I think, people would probably say Deus Ex. That\u2019s certainly what I am going to be known for. If anything, I suspect that\u2019s going to be it. And since then, here\u2019s my frustration. I\u2019ve always felt that, you know, the immersive simulation, which is the genre that, Paul and I have worked in and Arkane does now, probably better than I do, which is annoying. We\u2019ve been making that kind of game that you just described. Players solving problems the way they want in a deeply simulated world that\u2019s systemic, not scripted. I could give you a whole lecture about that. But the frustration for me is I\u2019ve always thought that was the most mainstream mass-market approach to game play you could possibly imagine. If shooting is too tough, try sneaking. If sneaking is too tough, try talking. If talking is too tough, try something else. If I\u2019m playing a shooter and I\u2019m not good enough, which I\u2019m not, my option is to stop. And so I\u2019ve always thought immersive sims were it. The sales have not borne that out. But I said to myself, when Disney came around with Mickey Mouse as my star, I could reach a mainstream audience with these ideas. And so Epic Mickey, it was an immersive sim, right? And gamers didn\u2019t get it. I got so many emails and Twitter messages about sell out, sell out. But the philosophy was there if they had just taken the time to look for it. So I\u2019m pretty proud of Epic Mickey too. GamesBeat: So you\u2019re very focused on this particular kind of game, but it does seem like a lot of games have incorporated both kinds of ways. Like scripted and unscripted. And I remember even like Uncharted with, you know, like Amy Hennig\u2019s path was all very on rails in some ways. But then they\u2019ll throw a hub in there or something and you can choose among five different missions right now, or whatever. Right. And go about them in any order. So there\u2019s some emergence in there that can be built into some of these scripted stories. Spector: Yeah. Games that offer real choices to players. They\u2019re typically about how are you going to kill this thing. There are bad guys shooting at you from behind cover, what gun do you use? Where do you hide? GamesBeat: Telltale too. Spector: Well, tell me that\u2019s an interesting thing, man. You\u2019re jumping me all over the place. I want to talk about all of this. No, I was having a conversation just last night. But some of my favorite games are Heavy Rain and Detroit \u2014 the David Cage games, the Telltale Games, as experiences. I love those games. I would never make one. I don\u2019t mean to disparage them in any way. Again, I love them, but they\u2019re basically five movie scripts jammed together. There\u2019s the appearance of player agency, but not the reality of it. And the key way you can tell is this. Will the player ever surprise themselves? Will the player ever surprise the developer? And in Telltale and in David Cage\u2019s work \u2014 I think David Cage is one of the two best writers we have in the business. But Amy Hennig is right up there, maybe one of the top three. But they know literally everything that is possible. And in my games and in the arcade games and in other immersive sims, or immersive sim adjacent games, we don\u2019t know everything that\u2019s going to happen. A year after we shipped Deus Ex, I was watching a tester demonstrate it for a bunch of executives. Why executives needed a demonstration of a game that won a bunch of Game of the Year awards a year after it shipped. We\u2019ll leave that aside. That\u2019s another story. But he was in a place I\u2019d been a lot of times, and there were three problems to solve there. And so I\u2019m going, okay, three problems. He can solve one of them here. And to make a long story short, he set things up in such a way and positioned himself in such a way that with one shot of the pistol, the weakest weapon in the game. He solved all three problems. I guarantee no one on the planet had ever done that before. I didn\u2019t know it was possible. He was rewarded because he thought about the problems and solved them with one shot. Warren Spector was the lead on Epic Mickey GamesBeat: That reminds me of your [One Block] game idea. Spector: Oh, I\u2019ve always been afraid to do it. There are two things I really want to do that I haven\u2019t done yet. One is an interactive musical. I\u2019ve got ideas about it. I\u2019m a Broadway and movie musical freak. I love that stuff. And I have some ideas about how to do it that aren\u2019t just beat matching. That\u2019s one thing. The other one is what I\u2019ve been calling the One Block role-playing game. I haven\u2019t talked much about it and I don\u2019t really know how to do it. Which is one of the reasons why I want to do it. But no one will fund it. I mean, it\u2019s just too crazy. But in that game, what I want to do, if nothing else, is put a gun on the mantelpiece in a room, in a building or a hotel with one bullet in it. And if the player picks it up and fires that one shot that they\u2019ve got. It\u2019s the biggest moment in their life because that\u2019s what it would be in the real world. You pick up a gun in the real world and you point it at someone and you shoot it, your life has changed forever. And I would love players to experience that and have to be smarter about things. I mean, I don\u2019t believe games cause behavior. I think games are interesting. Learning tools. There\u2019s a whole other talk about that we could have too. But I\u2019m sick of guns in games. I think it\u2019s in bad taste. And I hate the fact that what we do a lot of the time is say, \u2018Hey, player, good job killing all those things.\u2019 Pat on the back. GamesBeat: Trivializing death. Spector: Yeah. And we don\u2019t often offer alternatives. And so I think about moving forward. I\u2019m going to be the no weapons guy. I don\u2019t want to remove player agency. I don\u2019t want to reduce the opportunities for players to do things, but I think weapons are not necessary. Deus Ex: Human Revolution GamesBeat: Is it almost more because there\u2019s so many other things you can do, as opposed to, I\u2019ve had enough of the violence? Spector: Well, I personally had enough of the violence. My personal feelings are not a reason to make a business decision. Except I\u2019m lucky enough that I get to make that business decision. But the problem is most \u2014 I don\u2019t think I\u2019m overstating \u2014 most games you do things because the game tells you to and doesn\u2019t offer you any opportunities beyond that. So in a shooter, what are you going to do if you\u2019re not shooting? In a stealth game, what are you going to do if you\u2019re not sneaking? And if you\u2019re in a choose your own adventure game, like David Cage and the Telltale Games, and even Amy, who I love desperately, what are you going to do? But follow the branch of the tree that they offer you? So if there are no other options, you\u2019re going to do what you\u2019re told. And in my games, I hope you\u2019re never in a position where you have to do what I tell you to because I will never tell you what to do. A civilian airliner crash site in Call of Duty: Modern Warfare III. GamesBeat: Yeah. I play Call of Duty every year. They had an interesting approach in this year\u2019s game where they tried to do more of the emergent gameplay with open maps where, you know, you had maybe three objectives. And you could do it in any order as you wish. And there\u2019d just be a swarm of enemies. So you could start out doing stealth. But it\u2019s the mistake they make if they don\u2019t give you a silencer at the beginning. And so the very, very first shot you take, then in comes the swarm. And you have to find a way to survive that swarm of people coming after you. Spector: See, here\u2019s the thing. I\u2019m not going to talk about individual games. I don\u2019t do that because I don\u2019t want to lose friends. GamesBeat: Well, I do want to get to what the interesting point I think was this time, and that was, and it was more like credit for this observation goes to Gamespot and their review. And they felt like the best thing about Call of Duty\u2019s single-player campaigns was the intensity of it, the story storytelling, the moment-by-moment tension that gets built up. It just gets built up, and then all of a sudden all hell breaks loose. And they couldn\u2019t do that in this particular kind of approach because, and the odd thing was, they put this very compelling cinematic [into the beginning of the open world scene]. Your friend gets killed. And then they go into this open world thing, and at the end of it, there\u2019s another cinematic that shows, oh, I\u2019m mourning my friend. Right. And all this stuff in the middle has nothing to do with either of those moments. Except you have to go and fulfill certain objectives. Like, you\u2019re playing through a Warzone map or something, collecting resources. And so they did note that all of those moments of tension that build up in the single-player campaign, were on rails. They\u2019re just missing now. And you don\u2019t, you know, feel any real emotion as you\u2019re going about this map. Deus Ex was the one big hit that came out of Ion Storm. Spector: Yes. Well, that\u2019s a really interesting observation actually. There\u2019s one particular game structure, narrative structure, which is very common, which is story, fight. Story, fight. And that works largely because it may seem open between those cinematics. But the reality is the designer knows. We know every step you take, every shot you fire every time you\u2019re spotted by a guard or whatever. And because we know every single thing that every single player is going to do, you can create amazing emotional moments. I mean generate real feelings. And like, my games are interesting intellectual exercises. I don\u2019t feel like I\u2019ve ever created an emotional moment. Like a lot of games. Amy does all the time in her games. They\u2019re just different approaches. GamesBeat: And easier when there\u2019s like, only one way out of the map. OtherSide Entertainment has teams in Austin, Texas, and Concord, Massachusetts. Spector: Well, that\u2019s an interesting point too. Because no, nobody has ever commented on this. I can\u2019t believe nobody\u2019s noticed that every game I\u2019ve worked on has been completely linear. I mean, there\u2019s no branching of the narrative. There\u2019s no player control over this story. I control the story and the context and why what you\u2019re doing is important. And the players own the minute to minute. But the way my games are structured, they\u2019re a string of sandboxes. They\u2019re not open worlds, they\u2019re little sandboxes. And I know the entry point. And I know the exit point. And in the middle, do whatever you want. It\u2019s not just going wherever you want. It\u2019s not just picking one of these missions. How do you get through that door? And it\u2019s not, the door is not important. It\u2019s what\u2019s on the other side. I don\u2019t care how you get through the door. And then the other thing that I think differentiates the games that I work on from other people\u2019s games is, this is going to get tweaky, and this is, but in most games, there are only what I call the primary effect. So you pull a virtual trigger, you hit somebody, you damage them. That\u2019s it in my games. You fire a gun and it blows up a barrel. The barrel blows up the wooden door, the noise of it attracts more guards, you have to fight more stuff. So it\u2019s like firing the gun primarily, you know, hitting the exploding barrel. Secondary effect, the door that you need to get through is open. Tertiary effect, the noise attracts guards. And on top of that, I mean, you can sneak around and avoid the whole, the whole encounter. So you can find other ways to solve the problem. GamesBeat: So very Thief-like, I guess. Spector: Well, for sure. I mean, any immersive sim that\u2019s true to its name is going to express that primary, secondary, and tertiary effects idea. And that\u2019s something that again, I\u2019m not going to talk about specific games. I don\u2019t want to lose friends and I don\u2019t want to praise things and have other people be upset that I didn\u2019t praise them. But that is a strong player experience differentiator from other games. I\u2019ll stop there. GamesBeat: I do wonder some of these franchises where you started them and then moved on, was there ever like, any interest you had in what would you have done if you stayed on Deus Ex and were able to do the next one? Spector: I\u2019m not real, real good at sequels. Once you\u2019ve done it, you know, moving on is the right answer. But it would be very cool to go back to the day of the Deus Ex universe. I actually planned out a trilogy. And thank God I didn\u2019t get to do the third game in that series because it would\u2019ve been terrible in retrospect. A bad idea. But you know, one of the things I try to do is I don\u2019t think there\u2019s much point in trying to convince people to be interested in something. I try to find things that people are already interested in, and then build narratives, and worlds around that. And Deus Ex was a great example of that. And so it would be interesting to go, to go back to it now and find what are people interested in today. And then build a Deus Ex game around that. That would be interesting. The sad thing is Deus Ex, you could remake it now, and it would, it\u2019s got the gray death of virus. It\u2019s got DNA manipulation. It\u2019s got the dangers of AI. It\u2019s got terrorism as a major force in the world. I mean, you could play that game today and everything is still relevant, which is terrifying. Adam Jensen is the hero of Deus EX: Mankind Divided. GamesBeat: I really enjoyed, in the sequel land here, but I really enjoyed the Deus Ex: Mankind Divided game, parts of how they executed that whole, you know discrimination between natural humans and augmented humans. Spector: Human Revolution was the one that did it for me. I got to the end of it. I did a lot of screaming because they did some things that I wouldn\u2019t have done. But when I got to the end, I sat back and said, you know, I just had a Deus Ex experience. That\u2019s pretty cool. It felt like Deus Ex, it sounded like Deus Ex. I felt mostly empowered by the designers instead of coerced by them. So, you know, they did a good job. Retirement? GamesBeat: And I do wonder, I guess, what are some of the things that made you think it\u2019s time to like, retire, move on, you know, do other things? Spector: Well, interestingly, people hate it when I say this. But I am as interested in making people now as I am in making games. I\u2019ve worked on a lot of games. I\u2019ve done everything that doesn\u2019t involve coding or art. And I\u2019ve made some games that I mean, I\u2019ve been proud of every game I\u2019ve worked on. I\u2019ve never been assigned a game. I\u2019ve always made the games I want to make the way I want to make them. I\u2019ve been incredibly lucky. But I haven\u2019t done it all. The game I\u2019m working on now, I can\u2019t talk about it yet. But I will tell you, I\u2019ve been thinking for a long time. What\u2019s the next step for immersive sims? And the obvious answer to that is multiplayer. And for me, I really want to do an outdoor setting. How can we simulate an outdoor setting and an environment at the level of depth necessary to provide players with the freedom that we want to give? So no one\u2019s done that before. A multiplayer outdoor environmental simulation. So there\u2019s still a challenge to be overcome from a development, a design standpoint. And as I said earlier, I\u2019ve got those two other games that maybe I\u2019ll make. I don\u2019t know. We\u2019ll see. GamesBeat: Even after 40 years, there\u2019s just no retirement? Spector: Well, obviously I\u2019ve thought about it. There are books to write. And there\u2019s consulting to do. I have definitely thought about it, but as long as there\u2019s something new to learn and you\u2019re working with a great team, there\u2019s joy. There\u2019s brainstorming with my team. No one has any reason to believe this, but the team I\u2019m working with now has the potential to be one of the great teams I\u2019ve worked with. And I\u2019ve worked with some great teams. So they challenge me all the time. They\u2019re ahead of me all the time. They\u2019re constantly improving the ideas that I come up with. And so there\u2019s, as long as there\u2019s that joy and I don\u2019t have to worry about HR and benefits and payroll you know, I\u2019m good to go. So, we\u2019ll see. And again, there, there are people to make. I always try to find out what your goal is. Not where you are going to be in five or 10 years, but what do you want to be when you grow up? What do you want to be? I\u2019m egomaniacal enough to think I can help them get there. Look at Harvey Smith, running Arkane in Austin. I could not be prouder of that guy. I pulled him out of QA. And I don\u2019t know if I taught him anything. It may be that I taught him nothing. But we had a great working relationship. He\u2019s responsible for a lot of my success. But seeing someone have that career trajectory. I want to do that again, and again and again, you know? So retirement, you know? I\u2019ve thought about it. But as long as I can find that joy in air quotes again, make other people, I\u2019m going to keep doing it. AI and UGC concerns GamesBeat: So I have practical concerns around my daughter who\u2019s graduated from USC. Spector: That\u2019s not allowed. You\u2019re not allowed to be that old. GamesBeat: And then she\u2019s a 3D animator, and she\u2019s about to try to find work in gaming and AI comes along now. Spector: Yeah. AI. GamesBeat: Yikes. I don\u2019t know what you think about that. Spector: That might drive me to retirement. If the human touch becomes secondary, that\u2019s not good. I mean, you know, the world changes in video games every, every couple of years. And now, like, there\u2019s so much to learn. I mean, games as a service, live OPs. I mean, you know, multiplayer, for me, that\u2019s all new territory. So my team is teaching me about that stuff. So there are, there are new challenges, new things to learn. AI, I mean, it could drive me outta this. GamesBeat: Yeah. I mean, the hope is that it makes us more efficient, but it eliminates some of the thousand person teams in the industry, but. Spector: I had 800 people on my last team. I\u2019ll never do that again. That\u2019s for sure. GamesBeat: And then on the other end of it, enabling UGC . Spector: Again, you know, there are things that interest me and things that don\u2019t. UGC is, you know, again, I don\u2019t find it that interesting. I may dabble with that a little bit, but when we made Deux Ex, we had a contest to see who could build the best, you know, Deux Ex level, and we gave away a computer and all of that. And we got zero publishable maps because it\u2019s not just about, you know, elevation and interconnectedness. It\u2019s making games that are about simulation and the exploitation of a simulation. You know, a world that is a tool as much as the actual tools you have, it\u2019s very hard. It\u2019s very hard. A dinosaur from Ark: Survival Ascended. GamesBeat: Although now, you know, things are getting more interesting. Like a rockstar just bought by UGC companies. So I think they want, you know, to stop them from infringing, but they also want to maybe show up with UGC on day one. The next big game. And that\u2019s kind of an interesting way to marshal your resources that I think, you know, where, you know, maybe you, you, you get the players themselves to dish out what the players want, and the developers maybe get to do what they think is best. So if that diverges, then maybe UGC is very helpful. Spector: So, we\u2019ll see. Again, you know, it\u2019s, what are you interested in? And maybe I\u2019m old school and the funny thing is I\u2019ve resisted multiplayer, and I\u2019ve resisted live OPs approach, you know, the games of a service. And I resisted UGC and one of my designers, a very smart guy, just said, you worked on Dungeons and Dragons, which is about UGC and multiplayer. And a game that\u2019s played forever. And it\u2019s like, it really took me aback. It\u2019s like, wait a minute, I gotta think about this, maybe all these things that I\u2019ve been resisting are exactly what I should be doing. So, you know, without going into detail, maybe that\u2019s something to explore. I don\u2019t know. We\u2019ll find out. Or we won\u2019t, maybe we will, maybe we won\u2019t. GamesBeat: Right. I talked to the Ark Survival folks recently, they said our developers are really, they\u2019re really focused on Arc too. But we had all of this demand from gamers to update ARC for the PlayStation five. Right. you know, who wanted to do that on the dev team, like nobody wanted to do that. Right. So, what they did was they just let the UGC people go crazy. And now they have a bunch of, you know, content for PlayStation five created by the UGC folks. Spector: I did not know that, that\u2019s incredible. That\u2019s an interesting idea. Because developers don\u2019t want to do the boring stuff. GamesBeat: It\u2019s all about the player agency. It\u2019s maybe the extreme part of it. And, you know, which is your idea, right. Player agency. Well, if you can\u2019t solve this problem, maybe you can make the solution to this problem. Spector: No, that\u2019s an interesting idea. Damn. You\u2019re making me think about stuff too. Teamwork GamesBeat: It\u2019s always a complicated world. Spector: Hey, that\u2019s why, you know, make complicated games and complicate the lives of players, you know, to my detriment sometimes I think. I\u2019m the king of the cult classics. GamesBeat: But it\u2019s good to know what you want to do. Spector: Well, and I\u2019ve got a talk I give about success, and everybody has their own success criteria. You know, it might be selling a gazillion copies and making, you know, a ton of money for, usually for somebody else. But you know, it may be offering players the joy of solving a puzzle and proving they\u2019re smarter than you are. I have other success criteria. I mean, I want to see this medium grow, and I\u2019m arrogant enough to think that influencing other developers is an important success criterion. Offering players the opportunity to become storytellers. That\u2019s one of my success criteria. Walking in someone else\u2019s shoes, we can do that. We almost never do. That\u2019s a success criterion. I mean, I could go down the list of what drives me and what has frankly kept me working for 40 years. GamesBeat: Awesome. What did you get some interesting feedback on that 40 year story ? Spector : It\u2019s been incredibly gratifying. It\u2019s been entirely positive, except for one guy, there\u2019s always one guy. No, it\u2019s, you know, it\u2019s hard to talk about without feeling like I\u2019m patting myself on the back. But there\u2019s been a lot of, I mean, it had 130,000 hits on LinkedIn, you know, where I posted about it. Game Developer told me it\u2019s one of the most read stories they have this year. And the response has been you\u2019re an inspiration to me. I got into the game business because of you. I started my studio because of you. I changed the way I thought about design because of you. And it\u2019s important to remember that I don\u2019t do real work. It\u2019s the teams that do real work and who make me better when I have a great team, I make a great game. And when I don\u2019t, I don\u2019t. And you can look at my resume and see where I had a great team and where I didn\u2019t. But it\u2019s been overwhelmingly positive. And again, one of my success criteria really is influencing things and moving the medium forward as an art form. And if I were to retire, I could look back with pride and say, \u2018Okay. I did something.\u2019 GamesBeat: Awesome. Thank you. GamesBeat's creed when covering the game industry is \"where passion meets business.\" What does this mean? We want to tell you how the news matters to you -- not just as a decision-maker at a game studio, but also as a fan of games. Whether you read our articles, listen to our podcasts, or watch our videos, GamesBeat will help you learn about the industry and enjoy engaging with it. Discover our Briefings.",
     "scraped_date": "22-12-2023"
   },
   {
@@ -312,7 +305,6 @@ def upload_articles():
     "source_url": "https://venturebeat.com/",
     "article_url": "https://venturebeat.com/ai/ces-2024-will-highlight-consumer-ai-products-and-the-goodyear-blimp-gary-shapiro-interview/",
     "publish_date": "17-12-2023",
-    "content": "Do you want to get the latest gaming industry news straight to your inbox? Sign up for our daily and weekly newsletters here . Last year, CES 2023 generated about 118,000 attendees and 3,200 exhibitors. It was the biggest number for the big tech trade show in Las Vegas since 2020 and it far outstripped the COVID-racked event in January 2022. This year, the CES 2024 show is expected to be bigger with perhaps 130,000 attendees and 3,500 exhibitors expected, said Gary Shapiro, CEO of the Consumer Technology Association, in an interview with GamesBeat. Exhibitor space is also expected to grow 10% to 2.4 million, up from 2.2 million for CES 2023. And one of the drivers of the show is AI, which is expected to be infused in lots of productions and services being announced at the show. Shapiro said the CES Innovation Awards program saw a 40%-plus jump in applications for CES 2024. Among this year\u2019s features: The Goodyear blimp will show up. Sharpiro is always a champion for innovation and a critic of government intervention. He published an op-ed piece recently here where he worried about the fading competitive edge of the U.S. in technology. We talked about that and more. VB Event The AI Impact Tour Connect with the enterprise AI community at VentureBeat\u2019s AI Impact Tour coming to a city near you! Learn More Here\u2019s an edited transcript of our interview. Gary Shapiro is CEO of the CTA, creator of CES. Gary Shapiro: We\u2019re very excited. All the indicators and signs are pointing in a good direction. We focus CES on innovation. The pieces are coming together bigger than they ever have. We have more innovations entries by about 40%. It seems like more excitement. Incredibly strong pre-registration. A lot of numbers are up from last year. We feel great. VentureBeat: Is that more people coming to Eureka Park, then? More startups? Shapiro: Last year we said more than 1,000. We\u2019re saying more than 1,000 this year as well. It\u2019s one of those where we don\u2019t give an accurate number until after the show. It\u2019s one of the last ones we sign up people for, and we see who shows up. But it\u2019s definitely more than 1,000. VentureBeat: What was attendance last year? Shapiro: It was 118,000 and change. This year, we don\u2019t know until the show is until the audit comes in. But we\u2019re projecting\u2013our goal is 130,000. We have strong pre-registration, especially internationally, and all the categories are strong. We\u2019re a bit away from the start of the year, which is something we\u2019ve been waiting for for years. It gives us some breathing room. We\u2019re away from the weekend, which we like, because we\u2019re not competing for hotel rooms in Las Vegas with the regular weekend crowd. That traffic is important to us. But what really counts is the people showing up with innovative products. If you look at some of our speakers, we have a pretty blockbuster group speaking on important issues. VentureBeat: The most obvious topic is AI. It\u2019s bigger than ever this year. Electric vehicles at CES 2023. Shapiro: Yes, definitely. It\u2019s the top of the list in terms of discussion. How companies will exhibit that, we\u2019ll discover when we get there. But it\u2019s definitely playing a major role. It\u2019s a key ingredient in just about everything from health care to mobility. That\u2019s important. The other big thing\u2013some of these things, I don\u2019t know how visible they are in each exhibit. But one we\u2019re particularly looking forward to\u2013last time we talked a year ago I was talking about how we had this thing with the United Nations. They had seven human securities or human rights. We talked about the right to health care, to food, to clean air and water, to community. They added, at our request, an eighth, which is the right to technology. The UN will be bigger than ever. Their CTO will be speaking. We\u2019re pretty jazzed about that. It\u2019s consistent with our overall theme about sustainability and innovation solving the world\u2019s biggest problems. That\u2019s what we\u2019ll see throughout CES. VentureBeat: What was the square footage and the number of exhibitors last year? Shapiro: Square footage ended up a little under 2.2 million. We\u2019re not done yet this year and we\u2019re over 2.4 million. I know we\u2019re over 10 percent growth in our footprint. I\u2019d have to look up an exact number for exhibitors last year, but it was about 3,500, and that\u2019s what we\u2019re projecting this year as well, around that. That number fluctuates, even in the next two weeks. Sometimes companies can\u2019t get it together. Statistically we have some no-shows and others add on at the last minute. Afterward we do an independent audit, and we\u2019ll issue something in the spring with the numbers \u2013 exhibit space, number of exhibitors, number of attendees, breakdown by country, things like that. VentureBeat: What do you see as far as the things AI companies need to work out before they really take off? The things that still need to be addressed in some way, whether with the government, with policy, with the concerns people have about the technology and what it could mean to society. Shapiro: This will definitely be a big discussion. A little over a year ago OpenAI was introduced to the public. But since then, obviously, Google and others have come forward. Microsoft just announced that they\u2019re going to be working with AFL-CIO, I believe, on AI and its effect on jobs. There are a lot of issues to unravel. One is the impact on jobs. Another is how it can be used ethically and safely. Another is how we could benefit as a society. We\u2019ll talk about a lot of these issues at CES. We\u2019ll see a lot of discussion about what companies are doing, but we also have a public policy track to talk about AI and the government\u2019s role. I had the privilege of speaking last month to the Senate Majority Leader. There was something just published on Friday at Real Clear Markets. I talked about AI and how there\u2019s competition between countries and how they approach it. Generally, I applaud the Senate there. The positive there is that Congress, especially the Senate, is doing a series of listening sessions. I was part of one. It was the first time I was in a room with the heads of the trial lawyers\u2019 association and unions and others talking about these big issues. They\u2019re being very thoughtful. They recognize there\u2019s a balance between promoting innovation and providing guardrails so that businesses know what they can and can\u2019t do. It\u2019s not this irresponsible call for a six-month ban that\u2019s impossible to enforce. We opposed that. Responsible companies are looking for ways to use AI to benefit whatever they do in their companies \u2013 to do it better, to do it more efficiently, to free up people for other jobs, to be safer, to get to solutions quicker. I was at a meeting a few months ago of Detroit-area CIOs. They were all universally enthusiastic about AI. They\u2019re all using it to get things done in a matter of hours or days when it used to take weeks or months. Most companies in the country that are thinking about this are pretty jazzed about it. How that translates to CES, I look to see products that use AI in services and things like that to just do things better and quicker, to get to solutions for some of the problems of mankind quicker. VentureBeat: Aside from AI, what else do you see as trending topics or trending exhibit areas of the show? Virtual reality at CES 2023. Shapiro: Well, obviously transportation is big. The footprint of the mobility section is much bigger than last year, which was bigger than the year before. We\u2019re approaching 500,000 square feet for mobility. In 2020 we were at 300,000. In 2023 we were at 416,000. We have a 61% increase in vehicle tech exhibits from 2020. You\u2019ve been to the newer west hall. It\u2019s totally full. There\u2019s spillover outside to other areas of the show, to the central hall. We\u2019re seeing a lot there not only in terms of traditional, like Honda announcing electric vehicles. A number of car companies are doing different things. There are other forms of mobility, obviously, everything from electric scooters to drones that carry people. Someone\u2019s doing a demonstration there. We have the Goodyear Blimp for the first time. Another big area is health care technology. It\u2019s continuing to be a very strong area of the show. We have a lot of major brands and speakers there as well. We have our first dedicated keynote for health care, from Elevance. We have our first keynote speaker from the video game industry. The CEO of L\u2019Or\u00e9al will be speaking. That\u2019s pretty cool for us. We have another European company, the CEO of Siemens for the first time. Qualcomm\u2019s CEO will be back. Wal-Mart\u2019s CEO will be back. They had a keynote at our 2021 digital event. We\u2019ll have a big activation with Wal-Mart on the floor. VentureBeat: Do you see particular themes emerging from the keynote group? Shapiro: There\u2019s two big themes. One is sustainability. Everyone wants to talk about that. That\u2019s one of the tying themes for the keynotes. Another is just innovation generally. We have a 40% increase in entrants for the innovation contest. It\u2019s a pretty respected thing we do. We get several thousand entries. Only a relatively small percentage get to be award winners. VentureBeat: Are there areas of tech where you want to see the most advancement or the most fresh approaches? Shapiro: Our foundation focuses on technology for older people and people with disabilities. It\u2019s helped push the show in that direction. We have a meeting of the disabilities community before the show in Las Vegas, and if you walk around the show, there\u2019s a number of disabled people who are very visible. They help evaluate the show. They run the show. They talk about disability products. We have an innovations award category now. We have an entrepreneurial contest for products for people with disabilities. My wife, as a doctor who deals with blindness, is a judge for it. Our thinking is, everyone is disabled, or they will be disabled. The head of the AARP is speaking again. We have a partnership with the AARP. Being someone who\u2019s now officially classified as a senior, I\u2019m pretty aware. It\u2019s gratifying to see how many products are designed with seniors in mind. It\u2019s a selling point. A lot of products use AI, for example to monitor people. It\u2019s a particular interest of Corie Barry at Best Buy. Aging in place and health care technology, this is a passion of hers. I don\u2019t think it\u2019s a secret. When she became CEO, one of the first things she did was acquire a healthcare company. She\u2019s spoken about her personal experience with her own mother. It\u2019s a passion issue for her, and she\u2019s not alone. A lot of us have or had older parents. You want to take care of them, but you\u2019re remote. Related to that issue is the issue of healthcare availability. It\u2019s just a fact that these days we\u2019ve limited the number of doctors we train to a fixed number for the last two decades, but we have a bigger population, especially a bigger aging population. What\u2019s the safety valve there? Some of it is doctors coming from overseas. But another is using technology to do remote monitoring. Obviously, COVID helped with telehealth. We have a bunch of companies focused on that. We have a lot of doctors engaged with us as an organization, but also, from a healthcare technology perspective\u2013we\u2019ve become a center for a lot of healthcare interests, from the providers to the hospitals to the insurance companies to the tech companies. We\u2019ve been the centerpiece. Togg\u2019s booth at CES 2023 was quite popular. We have more than 20 standards in healthcare now, and even intersecting with AI. We\u2019ve created definitions. We\u2019ve defined sleep. We\u2019ve defined steps. The industry can work together and set standards. Some of it is just best practices around things like privacy. We\u2019ve done that for wearables. Some of it is advocacy. We\u2019re trying to do it for all privacy, so we can move things along and everyone has the same expectations on a national basis. Any startup can come in and understand the rules without having a barrier to entry around dealing with state and local rules that are different everywhere. Accessibility, as we call it, is very important to us in a whole range of ways. There\u2019s a journalist who comes to us from Canada. He\u2019s mostly disabled in terms of mobility. He goes around in\u2013he\u2019s almost laying down on a platform. He and his partner cover the show and see things that are applied. Stevie Wonder often comes to CES and speaks as someone who\u2019s visually impaired. There are lots of different kinds of tech for disability. Between our health care technology, our focus on disability and awareness, it\u2019s definitely a big investment for us, but it\u2019s an important thing for our society. VentureBeat: Are there tech issues that you think will be fodder for a lot of conversation with government people coming? CES 2023 drew 118,000 people. Shapiro: We have a global array of people coming. We\u2019ve done some travel to Asia and Europe in the past year. We have a cabinet minister from France, senior ministers from the Netherlands, top people from Korea. We have the mayor of Seoul and the governor of their largest jurisdiction. We obviously have hundreds of policy makers from around the U.S. \u2013 state legislators, congressmen, senators, agency heads, commissioners from places like the FTC, the FCC, the CPSC. There\u2019s a whole range of policy issues. We have a whole separate policy track at the show. What the policy makers get out of it is they see the real world. They see the entrepreneurial focus, the competition, the possibility and promise, and the role that they play. They usually end up wanting to help innovation. But we\u2019re not anti-government or anti-rules. We just want to make sure we know what the guardrails are, and that they don\u2019t unnecessarily discourage innovation. That\u2019s something we often struggle with. VentureBeat: Is there also some antitrust enforcement that you appreciate? Shapiro: Oh, we totally appreciate antitrust enforcement. We are, by definition, a group of competitors. As an entity we\u2019re very sensitive. We have to be an industry that is, for the most part, lowering prices rather than raising them. TV sets are a great example. We\u2019re deflationary in many of our products, if not all. Some products follow the inflation curve. But we stay out of pricing discussions. In terms of antitrust, we\u2019re very concerned as an organization with the position the U.S. has taken around essentially barring big companies from buying smaller ones. Smaller companies make up 80% of our membership. They\u2019re in agreement with our larger companies that the most absurd thing our government could do is discourage big companies from buying small ones. Startup capital comes because people think they have an exit, and the biggest exit by far is acquisition. You can go public or grow intrinsically, but that\u2019s less likely than being acquired. Everybody wants startup capital. They want investment. We\u2019re united around that. Our most fervent members are the VCs and startups and others who believe this administration is clueless when it comes to understanding how the free market works and what\u2019s best for the consumer. Changing the consumer welfare standard to protect existing competitors is crazy. Even crazier is going to Europe and telling antitrust officials how they can sue American companies. We\u2019re beside ourselves with how the Biden administration is anti-innovation and attacking innovations not only directly in court\u2013by the way, of those that have gone through diversion, almost every one of them, the Biden administration has lost the court case. Federal judges, whether Democratic or Republican appointees, are united in interpreting the law as it was originally intended, which favors consumer welfare. But they have successfully discouraged a lot of acquisitions by threatening to sue. VentureBeat: It\u2019s interesting to see the contrast between the U.S. and Europe when it comes to things like legislation to force platforms to stay open or be more open. The Digital Markets Act is something I think of in particular. The Hasbro Selfie Series at CES 2023. Shapiro: The Digital Markets Act, its impact has yet to be seen. The hope is that it\u2019s more like the law in Europe that determined opting out for privacy purposes and things like that, the gathering of consumer information, which has become essentially a time tax on every user of any website in Europe. It caused a lot of smaller companies to go out of business. But at least what Europe did is they have a pan-European law. Any startup, any big company can follow the law and add in the three clicks you have to do to determine your cookies preferences and move on to the website. The United States, we don\u2019t have that. We don\u2019t have a federal law. The technology industry law is united and saying we need a federal law. It matters where it is. Giving private lawyers the ability to bring more lawsuits isn\u2019t something that anyone wants. But we need a law in the United States. In general, what we see with the Digital Markets Act is that bigger companies can benefit from that. It\u2019s a minor hassle. It will be exclusionary to smaller companies that want to come up with innovative AI and other solutions. That\u2019s something we\u2019re concerned about. Europe, as much as we love Europe, and there are some great pockets of innovation\u2013on a per-capita basis there are dramatically fewer unicorns in Europe. In large part that\u2019s because they put privacy way above innovation. You compare that to China, which puts innovation way above privacy. They have enormous data sets for AI, and they definitely have a competitive advantage because of it. It\u2019s like Goldilocks. We want to make sure the porridge is just right in the United States. We need a law that balances the need for privacy, which we value as a human right, but remains reasonable about it. It depends on the situation. In a life and death situation, privacy becomes less important than saving lives. Whereas in Europe, they go beyond. They even have the right to be forgotten. You can get your name off Google searches. The U.S. values historical accuracy and facts. We have a different balance. As I told several Senators when we had these sessions, the U.S. has always gotten it right in terms of focusing on innovation and balancing against competing interests. We\u2019ve never really stopped innovation. It goes back to the invention and legality of the VCR and other recording technologies, and then the internet and so many other things. We\u2019ve had policies in the United States that encourage innovation, encourage us to be a leader, encourage capital formation. We don\u2019t mind that people get rich from amazing inventions. There\u2019s not this great resentment toward people like Bill Gates or Steve Jobs or even Jeff Bezos. They do things. They advance. They create great things that people love. Other countries don\u2019t have the same freedoms or incentive structure. We have a different perspective, and in my view, it\u2019s been the right perspective, because we\u2019re still the most innovative country in the world by almost every measure. Whether it\u2019s patents or unicorns or whatever measure you want to use for innovation. VentureBeat: It\u2019s interesting that you have this global perspective. Technology in general seems to want globalism. It\u2019s shocking how geopolitical a world we still have, though. Are there things that make you think that we\u2019re going to have this for a very long time to come? Are companies going to have to deal with geopolitics for good? Shapiro: There are several good questions you raise. In the last couple of decades, the world feels like it\u2019s gotten more divided. The United States feels like we\u2019ve gotten more divided, with more people in different opposing corners. That affects companies\u2019 decision-making in a number of ways. The China situation is particularly sensitive. I\u2019m glad to see that President Biden and President Xi have at least gotten together and talked to each other. When people talk together, treat together, the world is more positive. Certainly, it\u2019s better than just six or eight months ago, when there was talk about cutting off China totally. There are concerns about China and Taiwan that aren\u2019t going away. We commissioned Kearney to look at the situation last year. The thing we\u2019re advocating, and their research fully supports this, is that we should be looking at trading with our partners, our friends, our treaty allies. Canada, Mexico, Europe, Japan, Korea, Australia, and others. We even have trade relations with Vietnam. We should be looking at the things we want to do which are especially critical to our future from a security and defense point of view, critical to our infrastructure, and making sure we have alternative sources of supply. It\u2019s a very long report. It\u2019s publicly available. But there\u2019s a lot of data saying that we can\u2019t just flip a switch and expect these things to be manufactured in the U.S. in the next 10 years. That\u2019s not going to happen. Even just going into some of the chip production, with the CHIPS act, it\u2019s very problematic getting the skills we need, the people we need. Some of the things the Biden administration has thrown in there, like having child care mandated\u2013all these things were pretty surprising to industry, and not very welcome. It\u2019s so difficult to get the type of manufacturing skills we need and attract the manufacturing workforce, which we don\u2019t have right now. It\u2019s a skilled workforce, more than you would expect. This is a gradual process and we want to do it right. Sony\u2019s Jim Ryan shows off the PSVR 2 at CES 2023. In terms of the world, whether it\u2019s Russia and Ukraine or the Middle East situation, these are definitely challenges, which is why we\u2019re even more hopeful that our relationship with the United Nations\u2014we can focus on making the world better and solving fundamental problems. If people have health care, food, clean air, clean water, some of the biggest problems we\u2019re talking about go away. But there is a fundamental rift in the world between those that value the individual and those that value, in a sense, the greater good. What we see with China, there\u2019s definitely been a shift toward focusing on the overall country rather than the individual, on privacy and rights. The freedoms we expect as Americans, whether it\u2019s freedom of religion, of association, the ability to express your views, to marry who you want, all these freedoms we take for granted because they\u2019re embedded in our Constitution\u2014there\u2019s a huge difference there. That\u2019s playing out in the technology world right now with things like the data sets you need for AI, the type of health care we provide. The U.S. always seems to eventually do the right thing, even if it\u2019s after we\u2019ve tried everything else. The American democracy is not pretty, but ultimately we seem to end up in the right place. It\u2019s part of my job to make sure that innovation is one of the foremost considerations we have. American ingenuity, innovation, culture\u2014we try to solve problems. We try to be flexible. We try to respect each other\u2019s human rights. We try to balance that out. VentureBeat: It\u2019s always interesting to see the tech startups addressing problems that could help save the world. Things like pulling fresh water out of the air at Zero Mass Water. Shapiro: I was in Europe meeting with the new head of the EU competition thing last month. I was talking about our board and the guy who leads it. He says, \u201cYou mean Carmichael Roberts? You know him?\u201d Well, yeah. He\u2019s kind of my boss. He\u2019s the chairman of our board. He says, \u201cBill Gates was sitting in the chair you\u2019re sitting in, and he was telling me all about Carmichael Roberts. Yeah, that\u2019s my guy. We have this incredible volunteer leadership that guides us. If you look at the players on our board, it\u2019s just a wealth of talent. They\u2019re all volunteers. We\u2019re very blessed. VentureBeat: What do you think about the year ahead, how the world economy looks and how that could affect the tech markets? Do you see some brightness or more things to worry about? Gl\u00fcxkind Technologies showed off its AI-based smart stroller Ella at CES 2023. Shapiro: Like everyone I\u2019m worried about global conflicts. Being Jewish, this last one has hit home in a way that nothing has before for me. There\u2019s a lot of introspection involved around various things around the world. The discussions are sometimes healthy. I\u2019m an optimist. I believe that interest rates seem to have peaked. I\u2019m hopeful there. I was with a friend from the mortgage industry last night. He was telling me that he\u2019s still moving houses along. People are buying and investing. When I think about my first mortgage being 11%, 6% doesn\u2019t sound so bad. Interest rates are a factor. Inflation is a factor. Global conflict is a factor. But we\u2019re an industry that\u2019s making a difference in progress and the human condition \u2013 people\u2019s health, their water, the air they breathe. I\u2019m optimistic in a general sense. When you get caught in a moment, when you look at the presidential campaign choices and other things, it\u2019s easy to get caught up. I can\u2019t say I\u2019m looking forward to the presidential discussions and other things we\u2019re seeing. I\u2019d like to see some conflicts resolved. But overall, in the long term, I\u2019m optimistic because of innovation and technology solving the world\u2019s problems. That\u2019s why I wake up every day. My job is to make sure innovation can flourish. If government does something harmful, if people screw up, if I don\u2019t do my job right, we\u2019ll be choking off our potential. That\u2019s what CES is about. That\u2019s what the CTA is about. My job is supporting innovation, and CES is part of it. CES is looking fabulous. We have a plethora of innovations that will make life better for people. I\u2019m pretty jazzed up about the next few weeks. GamesBeat's creed when covering the game industry is \"where passion meets business.\" What does this mean? We want to tell you how the news matters to you -- not just as a decision-maker at a game studio, but also as a fan of games. Whether you read our articles, listen to our podcasts, or watch our videos, GamesBeat will help you learn about the industry and enjoy engaging with it. Discover our Briefings.",
     "scraped_date": "22-12-2023"
   },
   {
@@ -701,126 +693,94 @@ def upload_articles():
   }
     ]]
 
-
-    # IF COLLETION EXISTS - DELETE IT
-    if "articles_collection" in chroma_client.list_collections():
-        chroma_client.delete_collection(name="articles_collection")
-
-    # CHROMA COLLECTION
-    chroma_article_collection = chroma_client.create_collection(name="articles_collection", embedding_function=sentence_transformer_ef)
-
-    all_articles_summarised = []
-    
+    all_summarised_articles = ""
 
 
-    # ITERATE THROUGH ALL ARTICLES IN ALL_ARTICLES
-    for articles in all_articles:
-        
-        # ITERATE THROUGH ALL ARTICLES IN EACH SOURCE
-        for article in articles:
+    for articles_json in all_articles[1:2]:
+        for article in articles_json:
+            # embedding_generated = False
+            # #PERFORMING EMBEDDING ON ARTICLE CONTENT
+            # try:
+            #     print("Embedding article: ", article["title"])
+            #     article_embedding = embedding_model.encode(article["content"])
+            #     embedding_generated = True
+                
+            # except:
+            #     print("Error with encoding article: ", article["title"])
 
-            # To SUMMARISE ARTICLE CONTENT USING GPT 
-            title = article["title"]
-            content = article["content"]
-            topic = article["topic"]
-
-            completion = openai_client.chat.completions.create(
-                model="gpt-3.5-turbo-16k",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
-                    {"role": "user", "content": "Given the following article title: " + title + ", category: " + topic + ", and summarised content: " + content + ", please summarise the content in 30 words or less."}
-                ]
-            )
-
-            summarised_content = completion.choices[0].message.content
-
-            new_article = {
-                "title": article["title"],
-                "topic": article["topic"],
-                "content": summarised_content,
-                "source": article["source"],
-                "source_url": article["source_url"],
-                "article_url": article["article_url"],
-                "publish_date": article["publish_date"],
-                "scraped_date": article["scraped_date"],
-                "trends": []
-            }
+            article_summarised = False
+            article_embedded = False
 
             try:
-                articles_collection.insert_one(new_article)
-            
-            except Exception as e:
-                return jsonify({
-                    "code": 500,
-                    "message": "upload.py internal error: " + str(e)
-                }), 500
-    
-        # CHROMADB IMPLEMENTATION - STORE ARTICLES IN CHROMADB
-        chroma_articles = []
-        metadatas = []
-        ids = []
+              title = article["title"]
+              content = article["content"]
+              topic = article["topic"]
+              source = article["source"]
+              source_url = article["source_url"]
+              article_url = article["article_url"]
+              publish_date = article["publish_date"]
+              scraped_date = article["scraped_date"]
+              
+              completion = openai_client.chat.completions.create(
+                  model="gpt-3.5-turbo-16k",
+                  messages=[
+                      {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
+                      {"role": "user", "content": "Given the following article title: " + title + ", category: " + topic + ", and summarised content: " + content + ", please summarise the content in 30 words or less."}
+                  ]
+              )
+              summarised_content = completion.choices[0].message.content
+              print(summarised_content)
+              article_summarised = True
+            except:
+              print("Error with summarising article: ", article["title"])
 
-        # GET OUT MONGODB ARTICLES - STORE IN CHROMADB
-        for article in articles_collection.find():
-            chroma_articles.append(article["content"])
-            metadata = {
-                "source": article["source"],
-                "topic": article["topic"],
-                "source_url": article["source_url"],
-                "article_url": article["article_url"],
-                "publish_date": article["publish_date"],
-                "scraped_date": article["scraped_date"],
-            }
-            metadatas.append(metadata)
+            if article_summarised:
+               all_summarised_articles += summarised_content + "\n\n"
+               article_embedding = embedding_model.encode(summarised_content)
+               print(article_embedding)
+               article_embedded = True
+            else:
+               print("Error with encoding article: ", article["title"])
 
-            # GET ID FOR EACH ARTICLE - STORED AS OBJECTID IN MONGODB
-            ids.append(str(article["_id"]))
-            # print(article["_id"])    
+            if article_summarised and article_embedded:
+              print("Article summarised and embedded")
+              # Check if the article already exists based on title or article_url
+              existing_article = articles_collection.find_one({
+                  "$or": [
+                      {"title": title},
+                      {"article_url": article_url}
+                  ]
+              })
 
+              if existing_article:
+                  print("Article already exists")
+              else:
+                  # If the article doesn't exist, insert the new article
+                  new_article = {
+                      "title": title,
+                      "topic": topic,
+                      "content": summarised_content,
+                      "source": source,
+                      "source_url": source_url,
+                      "article_url": article_url,
+                      "publish_date": publish_date,
+                      "scraped_date": scraped_date,
+                      "trends": [],
+                      "article_embedding": article_embedding.tolist()
+                  }
+                  try:
+                      articles_collection.insert_one(new_article)
+                      print("Article inserted successfully")
+                  except Exception as e:
+                      print("Error inserting article: ", str(e))
 
-        chroma_article_collection.add(
-            documents=chroma_articles,
-            metadatas=metadatas,
-            ids=ids
-        )
-
-        # OBTAIN TRENDS FROM ARTICLES IN DB - USE GPT
-        all_articles = ""
-
-        # GET ALL ARTICLES FROM DB and APPEND TO article_summary
-        count = 1
-        for article in articles_collection.find():
-            all_articles += str(count) + ". " + article["content"] + "\n"
-            count += 1
-
-        print(all_articles)
-        print("----------------")
-
-        # To OBTAIN A SUMMARY OF ALL ARTICLES OF THE CURRENT SOURCE
-        completion = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
-                {"role": "user", "content": "Given the following articles: \n\n" + all_articles + "\n\n, summarise the articles into 1 comprehensive article which summarises all of the articles above. Keep the number of words to 500 words or less"}
-            ]
-        )
-
-        summarised_articles = completion.choices[0].message.content
-
-        all_articles_summarised.append(summarised_articles)
-
-    # ITERATE THROUGH ALL ARTICLES IN ALL_ARTICLES_SUMMARISED - APPEND TO ONE STRING
-    all_articles_summarised_string = ""
-    for article in all_articles_summarised:
-        all_articles_summarised_string += article + "\n\n\n"
-
-
-    # To OBTAIN MAIN TRENDS USING GPT
+    # To OBTAIN A SUMMARY OF ALL ARTICLES OF THE CURRENT SOURCE
+     # To OBTAIN MAIN TRENDS USING GPT
     completion = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         messages=[
             {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
-            {"role": "user", "content": "Given the following articles: \n\n" + all_articles + "\n\n\n, summarise and extract out from the articles 10 general trends, with each being 10 words or less. Have the trends be more general and less specific. An example of a general trend is as follows: 'Generative AI revolutionizes content creation with powerful neural networks.', and an example of a more specific trend is as follows: 'Google is making use of AI Generated Music'. List out the trends in the following format: \n\n1. Trend 1\n2. Trend 2\n3. Trend 3\n4. Trend 4\n5. Trend 5"}
+            {"role": "user", "content": "Given the following articles: \n\n" + all_summarised_articles + "\n\n\n, summarise and extract out from the articles 1 to 5 trends that you observe, with each being 10 words or less. Have the trends be more general and less specific. An example of a general trend is as follows: 'Generative AI revolutionizes content creation with powerful neural networks.', and an example of a more specific trend is as follows: 'Google is making use of AI Generated Music'. List out the trends in the following format: \n\n1. Trend 1||Short description and explanation of trend 1\n2. Trend 2||Short description and explanation of trend 2\n3. Trend 3||Short description and explanation of trend 3 etc...."}
         ]
     )
 
@@ -830,41 +790,180 @@ def upload_articles():
     trends_list = trends.split("\n")
 
     # REMOVE THE NUMBERS FROM THE TRENDS
-    trends_arr = []
-    for trend in trends_list:
-        # FIND THE INDEX OF THE FIRST FULL STOP
-        index = trend.find(".")
-        # REMOVE THE NUMBER FROM THE TRENDS
-        trends_arr.append(trend[index+2:])
+    # trends_arr = []
+    # for trend in trends_list:
+    #     # FIND THE INDEX OF THE FIRST FULL STOP
+    #     index = trend.find(".")
+    #     # REMOVE THE NUMBER FROM THE TRENDS
+    #     trends_arr.append(trend[index+2:])
 
-    # ITERATE THROUGH TREND IN TREND_ARR
-    for trend in trends_arr:
+    # print(trends_arr)
 
-        # QUERY THE CHROMADB FOR THE TREND
-        results = chroma_article_collection.query(
-            query_texts=[f"Given the following trend: '{trend}'"],
-            n_results=5,
-            include=['documents']
-        )
+    print(all_summarised_articles)
+
+    return trends_list
+    # # IF COLLETION EXISTS - DELETE IT
+    # if "articles_collection" in chroma_client.list_collections():
+    #     chroma_client.delete_collection(name="articles_collection")
+
+    # # CHROMA COLLECTION
+    # chroma_article_collection = chroma_client.create_collection(name="articles_collection", embedding_function=sentence_transformer_ef)
+
+    # all_articles_summarised = []
     
-        ids_array = results['ids'][0]
-        # ITERATE THROUGH IDS_ARRAY
-        for article_id in ids_array:
+
+    # # ITERATE THROUGH ALL ARTICLES IN ALL_ARTICLES
+    # for articles in all_articles:
+        
+    #     # ITERATE THROUGH ALL ARTICLES IN EACH SOURCE
+    #     for article in articles:
+
+    #         # To SUMMARISE ARTICLE CONTENT USING GPT 
+    #         title = article["title"]
+    #         content = article["content"]
+    #         topic = article["topic"]
+
+    #         completion = openai_client.chat.completions.create(
+    #             model="gpt-3.5-turbo-16k",
+    #             messages=[
+    #                 {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
+    #                 {"role": "user", "content": "Given the following article title: " + title + ", category: " + topic + ", and summarised content: " + content + ", please summarise the content in 30 words or less."}
+    #             ]
+    #         )
+
+    #         summarised_content = completion.choices[0].message.content
+
+    #         new_article = {
+    #             "title": article["title"],
+    #             "topic": article["topic"],
+    #             "content": summarised_content,
+    #             "source": article["source"],
+    #             "source_url": article["source_url"],
+    #             "article_url": article["article_url"],
+    #             "publish_date": article["publish_date"],
+    #             "scraped_date": article["scraped_date"],
+    #             "trends": []
+    #         }
+
+    #         try:
+    #             articles_collection.insert_one(new_article)
             
-            # RETRIEVE ARTICLE FROM MONGODB
-            article = articles_collection.find_one({"_id": ObjectId(article_id)})
+    #         except Exception as e:
+    #             return jsonify({
+    #                 "code": 500,
+    #                 "message": "upload.py internal error: " + str(e)
+    #             }), 500
+    
+    #     # CHROMADB IMPLEMENTATION - STORE ARTICLES IN CHROMADB
+    #     chroma_articles = []
+    #     metadatas = []
+    #     ids = []
 
-            # APPEND TREND TO ARTICLE
-            article["trends"].append(trend)
+    #     # GET OUT MONGODB ARTICLES - STORE IN CHROMADB
+    #     for article in articles_collection.find():
+    #         chroma_articles.append(article["content"])
+    #         metadata = {
+    #             "source": article["source"],
+    #             "topic": article["topic"],
+    #             "source_url": article["source_url"],
+    #             "article_url": article["article_url"],
+    #             "publish_date": article["publish_date"],
+    #             "scraped_date": article["scraped_date"],
+    #         }
+    #         metadatas.append(metadata)
 
-            # UPDATE ARTICLE IN MONGODB
-            articles_collection.update_one({"_id": ObjectId(article_id)}, {"$set": article})
+    #         # GET ID FOR EACH ARTICLE - STORED AS OBJECTID IN MONGODB
+    #         ids.append(str(article["_id"]))
+    #         # print(article["_id"])    
+
+
+    #     chroma_article_collection.add(
+    #         documents=chroma_articles,
+    #         metadatas=metadatas,
+    #         ids=ids
+    #     )
+
+    #     # OBTAIN TRENDS FROM ARTICLES IN DB - USE GPT
+    #     all_articles = ""
+
+    #     # GET ALL ARTICLES FROM DB and APPEND TO article_summary
+    #     count = 1
+    #     for article in articles_collection.find():
+    #         all_articles += str(count) + ". " + article["content"] + "\n"
+    #         count += 1
+
+    #     print(all_articles)
+    #     print("----------------")
+
+    #     # To OBTAIN A SUMMARY OF ALL ARTICLES OF THE CURRENT SOURCE
+    #     completion = openai_client.chat.completions.create(
+    #         model="gpt-3.5-turbo",
+    #         messages=[
+    #             {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
+    #             {"role": "user", "content": "Given the following articles: \n\n" + all_articles + "\n\n, summarise the articles into 1 comprehensive article which summarises all of the articles above. Keep the number of words to 500 words or less"}
+    #         ]
+    #     )
+
+    #     summarised_articles = completion.choices[0].message.content
+
+    #     all_articles_summarised.append(summarised_articles)
+
+    # # ITERATE THROUGH ALL ARTICLES IN ALL_ARTICLES_SUMMARISED - APPEND TO ONE STRING
+    # all_articles_summarised_string = ""
+    # for article in all_articles_summarised:
+    #     all_articles_summarised_string += article + "\n\n\n"
+
+
+    # # To OBTAIN MAIN TRENDS USING GPT
+    # completion = openai_client.chat.completions.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
+    #         {"role": "user", "content": "Given the following articles: \n\n" + all_articles + "\n\n\n, summarise and extract out from the articles 10 general trends, with each being 10 words or less. Have the trends be more general and less specific. An example of a general trend is as follows: 'Generative AI revolutionizes content creation with powerful neural networks.', and an example of a more specific trend is as follows: 'Google is making use of AI Generated Music'. List out the trends in the following format: \n\n1. Trend 1\n2. Trend 2\n3. Trend 3\n4. Trend 4\n5. Trend 5"}
+    #     ]
+    # )
+
+    # trends = completion.choices[0].message.content
+
+    # # SPLIT TRENDS INTO AN ARRAY OF TRENDS
+    # trends_list = trends.split("\n")
+
+    # # REMOVE THE NUMBERS FROM THE TRENDS
+    # trends_arr = []
+    # for trend in trends_list:
+    #     # FIND THE INDEX OF THE FIRST FULL STOP
+    #     index = trend.find(".")
+    #     # REMOVE THE NUMBER FROM THE TRENDS
+    #     trends_arr.append(trend[index+2:])
+
+    # # ITERATE THROUGH TREND IN TREND_ARR
+    # for trend in trends_arr:
+
+    #     # QUERY THE CHROMADB FOR THE TREND
+    #     results = chroma_article_collection.query(
+    #         query_texts=[f"Given the following trend: '{trend}'"],
+    #         n_results=5,
+    #         include=['documents']
+    #     )
+    
+    #     ids_array = results['ids'][0]
+    #     # ITERATE THROUGH IDS_ARRAY
+    #     for article_id in ids_array:
+            
+    #         # RETRIEVE ARTICLE FROM MONGODB
+    #         article = articles_collection.find_one({"_id": ObjectId(article_id)})
+
+    #         # APPEND TREND TO ARTICLE
+    #         article["trends"].append(trend)
+
+    #         # UPDATE ARTICLE IN MONGODB
+    #         articles_collection.update_one({"_id": ObjectId(article_id)}, {"$set": article})
 
         
-    return jsonify({
-        "code": 201,
-        "message": "Articles summarised and uploaded successfully. Trends generated successfully. Articles associated with trends successfully."
-    }), 201
+    # return jsonify({
+    #     "code": 201,
+    #     "message": "Articles summarised and uploaded successfully. Trends generated successfully. Articles associated with trends successfully."
+    # }), 201
 
 # CURRENT PROBLEMS
 # 1. NEED MORE ARTICLES - CURRENTLY ONLY HAVE 15 ARTICLES AND 10 TRENDS, THERE WILL BOUND TO BE OVERLAPS
