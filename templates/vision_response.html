@@ -12,7 +12,7 @@
       max-height: 500px; /* Set a maximum height for the container */
       overflow-y: auto; /* Enable vertical scrollbar */
     }
-
+    
     .myspinner {
       height: 10vh;
       display:flex;
@@ -66,7 +66,6 @@
                 <span class="hide-menu">Picture This!</span>
               </a>
             </li>
-            
           </ul>
 
         </nav>
@@ -132,56 +131,132 @@
             </div>
         </div>
 
-
-        <!-- <button type="button" class="btn btn-outline-primary m-1 active">This week</button>
-        <button type="button" class="btn btn-outline-secondary m-1">This month</button> -->
-
-        <br>
-        <br>
-
-        <h3> Upload a picture and enter your prompt </h3>
-        <p>Our system uses GPT-4 Vision to provide you a suitable response.</p>
-
-<div class="container mt-5">
-    <form method="POST" enctype="multipart/form-data" action="/upload_vision">
-
-        <!-- UPLOADING IMAGES -->
-        <label class="form-label" for="uploaded_images">Upload your image here:</label>
-        <input type="file" name="uploaded_image" class="form-control" id="uploaded_image" accept="image/*" required/>
-        <br>
+        <div class="text-end">
+          <h6>Want to upload another picture and ask questions about it?</h6>
+          <a class="btn btn-outline-secondary mt-2 active" href="/vision">Ask Another Picture</a>
+        </div>
         
-        <!-- USER PROMPT -->
-        <label class="form-label" for="user_prompt">Enter your query here:</label>
-        <input type="text" name="user_prompt" class="form-control" id="user_prompt" placeholder="Enter your query here:" required>
+        <div class="container mt-5">
 
-        <!-- SUBMIT BUTTON -->
-        <input type="submit" id="submit_btn" value="Ask TrendyAI" class="btn btn-outline-primary mt-3 active" onclick="display_loader()">
-    </form>
-</div>
+            <h2>Uploaded Photo:</h2>
+            <br>
 
-      <div class="pb-5 d-none" id="loader">
-        <div class="myspinner">
-          <div class="spinner-border" role="status">
-          </div>
+            <div>
+              <img id="received_img" src="../static/images/uploads/{{ image_filename }}" class="d-block mx-auto" style="max-width: 60%; max-height: 60%;" alt="">
+            </div>
+
+
+            <br>
+            <br>
+            <div class="d-flex justify-content-between"> 
+              <h3>Chat History: </h3>
+              <button class="btn btn-outline-success active d-inline" onclick="save_to_txt()">Save Chat History</button>
+            </div>
+            
+            <div id="chat_history" class="my-3 px-5 pt-3">
+
+              <h5 class="text-primary"><b>User Query: </b></h5><span>{{user_prompt}}</span>
+              <br><br>
+              <h5 class="text-secondary"><b>TrendyAI Response: </b></h5>
+              <span>{{gpt_response}}</span>
+              <br><br>
+
+            </div>
+
+            <div class="pb-5 d-none" id="loader">
+              <div class="myspinner">
+                <div class="spinner-border" role="status">
+                </div>
+              </div>
+              <div class="mx-auto text-center">
+                <b>TrendyAI is generating an answer, please wait...</b>
+              </div>
+            </div>
+            
+            <label class="form-label" for="user_prompt">Enter your query here:</label>
+            <input type="text" name="user_prompt" class="form-control" id="user_prompt" placeholder="Enter your query here:">
+            <input type="submit" id="submit_btn" value="Ask TrendyAI" class="btn btn-outline-primary mt-3 active" onclick="send_query()">
+
         </div>
-        <div class="mx-auto text-center">
-          <b>TrendyAI is generating an answer, please wait...</b>
-        </div>
-      </div>
 
       </div>
     </div>
   </div>
 
   <script>
-    function display_loader() {
+    function send_query() {
+
+      if (document.getElementById("user_prompt").value == "") {
+        alert("Please enter a query!");
+        return;
+      }
+
+      // Show the loader
       document.getElementById("loader").classList.remove("d-none");
 
-      // Don't let user resubmit form
+      // Disable the submit button
       document.getElementById("submit_btn").classList.add("disabled");
+
+      var user_prompt = document.getElementById("user_prompt").value;
+
+      // SEND USING AXIOS - SEND OVER THE USER_PROMPT AND THE IMAGE_FILENAME
+      axios.post('/new_query', {
+        user_prompt: user_prompt,
+        image_filename: "{{ image_filename }}"
+      })
+      .then(function (response) {
+        document.getElementById("chat_history").innerHTML += "<h5 class='text-primary'><b>User Query: </b></h5><span>" + user_prompt + "</span><br><br><h5 class='text-secondary'><b>TrendyAI Response: </b></h5><span>" + response.data.gpt_response + "</span><br><br>";
+
+        // Hide the loader
+        document.getElementById("loader").classList.add("d-none");
+
+        // Clear the user prompt
+        document.getElementById("user_prompt").value = "";
+
+        // Enable the submit button
+        document.getElementById("submit_btn").classList.remove("disabled");
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("Error while generating answer!\n\n" + "Error: " + error + "\n\nPlease try again in about 30 seconds. If the problem persists, please contact us.");
+
+        // Hide the loader
+        document.getElementById("loader").classList.add("d-none");
+
+        // Clear the user prompt
+        document.getElementById("user_prompt").value = "";
+
+        // Enable the submit button
+        document.getElementById("submit_btn").classList.remove("disabled");
+      });
     }
+
+    function save_to_txt() {
+      // Get the content of the chat_history div
+      var chatHistoryContent = document.getElementById("chat_history").innerText;
+
+      // Create a Blob with the content
+      var blob = new Blob([chatHistoryContent], { type: "text/plain" });
+
+      // Create a download link
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "{{image_filename}}.txt";
+
+      // Append the link to the body
+      document.body.appendChild(a);
+
+      // Programmatically trigger the download
+      a.click();
+
+      // Remove the link from the body
+      document.body.removeChild(a);
+  }
+
+
   </script>
 
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="../../static/libs/jquery/dist/jquery.min.js"></script>
   <script src="../../static/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../static/js/sidebarmenu.js"></script>
@@ -192,3 +267,8 @@
 </body>
 
 </html>
+
+
+<!-- 
+  Option to save chat history to a file (txt)
+ -->
