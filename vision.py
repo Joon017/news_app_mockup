@@ -17,10 +17,6 @@ from io import BytesIO
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 @app.route('/upload_vision', methods=['POST'])
 def upload():
 
@@ -28,7 +24,7 @@ def upload():
     prompt = request.form['user_prompt']
 
     # GET IMAGE FROM FORM
-    image = request.files['uploaded_image']
+    image = request.files['uploaded_images']
     image_filename = image.filename
 
     # SAVE IMAGE TO UPLOADS FOLDER
@@ -37,10 +33,10 @@ def upload():
     # CONVERT IMAGE TO BASE64
     path = 'static/images/uploads/' + image_filename
     with open(path, "rb") as image_file:
-        sImagedata = base64.b64encode(image_file.read()).decode('ascii')\
+        sImagedata = base64.b64encode(image_file.read()).decode('ascii')
         
     
-
+    return render_template('vision_response.html')
 
     api_base = "https://chatgpt4vision.openai.azure.com/" 
     deployment_name = "GPT-4-Vision"
@@ -79,7 +75,7 @@ def upload():
     print(f"Status Code: {response.status_code}")   
     print("-----")
     # print(response.json()['choices'][0]['message']['content'])
-    print(response.json())
+    print(response.json()['choices'][0]['message']['content'])
 
     # print(image.filename)
     return render_template('vision_response.html')
@@ -94,3 +90,7 @@ if __name__ == '__main__':
 # 1. Shift all of this to app.py
 # 2. Display answer and image on vision_response.html (find out how to pass image and answer to html through render_template)
 # 3. Find out how to keep and display previous questions and answers on vision_response.html
+#    - Might use a 2D array, where each row is a question and answer pair
+#    - Append each new question and answer pair to the 2D array
+#    - Check if the image has changed, if it has then make the 2D array empty
+    

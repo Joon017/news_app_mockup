@@ -12,6 +12,14 @@
       max-height: 500px; /* Set a maximum height for the container */
       overflow-y: auto; /* Enable vertical scrollbar */
     }
+    
+    .myspinner {
+      height: 10vh;
+      display:flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
   </style>
 </head>
 
@@ -58,78 +66,6 @@
                 <span class="hide-menu">Picture This!</span>
               </a>
             </li>
-            <!-- <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-alerts.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-alert-circle"></i>
-                </span>
-                <span class="hide-menu">Alerts</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-card.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-cards"></i>
-                </span>
-                <span class="hide-menu">Card</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-forms.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-file-description"></i>
-                </span>
-                <span class="hide-menu">Forms</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-typography.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-typography"></i>
-                </span>
-                <span class="hide-menu">Typography</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">AUTH</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-login.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-login"></i>
-                </span>
-                <span class="hide-menu">Login</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-register.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-user-plus"></i>
-                </span>
-                <span class="hide-menu">Register</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">EXTRA</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./icon-tabler.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-mood-happy"></i>
-                </span>
-                <span class="hide-menu">Icons</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./sample-page.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-aperture"></i>
-                </span>
-                <span class="hide-menu">Sample Page</span>
-              </a>
-            </li> -->
           </ul>
 
         </nav>
@@ -195,48 +131,132 @@
             </div>
         </div>
 
-
-        <!-- <button type="button" class="btn btn-outline-primary m-1 active">This week</button>
-        <button type="button" class="btn btn-outline-secondary m-1">This month</button> -->
-
-        <br>
-        <br>
-
-        <h3> Upload a picture and enter your prompt </h3>
-        <p>Our system uses GPT-4 Vision to provide you a suitable response.</p>
+        <div class="text-end">
+          <h6>Want to upload another picture and ask questions about it?</h6>
+          <a class="btn btn-outline-secondary mt-2 active" href="/vision">Ask Another Picture</a>
+        </div>
         
+        <div class="container mt-5">
 
-<div class="container mt-5">
+            <h2>Uploaded Photo:</h2>
+            <br>
 
-    <form method="POST" enctype="multipart/form-data" action="http://localhost:5003/upload_vision">
-        <label class="form-label" for="customFile">Upload your image here:</label>
-        <input type="file" name="uploaded_image" class="form-control" id="uploaded_image" accept="image/*"/>
-        <br>
-    
-        <label class="form-label" for="user_prompt">Enter your query here:</label>
-        <input type="text" name="user_prompt" class="form-control" id="user_prompt" placeholder="Enter your query here:">
-        <input type="submit" value="Ask TrendyAI" class="btn btn-outline-primary mt-3 active">
-    </form>
-    <br>    
-    <br>
-    <br>
-    <br>
+            <div>
+              <img id="received_img" src="../static/images/uploads/{{ image_filename }}" class="d-block mx-auto" style="max-width: 60%; max-height: 60%;" alt="">
+            </div>
 
-    <h2>Uploaded Photo:</h2>
 
-    <img src="../static/images/uploads/Nprofile2.jpg" alt="">
+            <br>
+            <br>
+            <div class="d-flex justify-content-between"> 
+              <h3>Chat History: </h3>
+              <button class="btn btn-outline-success active d-inline" onclick="save_to_txt()">Save Chat History</button>
+            </div>
+            
+            <div id="chat_history" class="my-3 px-5 pt-3">
 
-    <br>
-    <br>
+              <h5 class="text-primary"><b>User Query: </b></h5><span>{{user_prompt}}</span>
+              <br><br>
+              <h5 class="text-secondary"><b>TrendyAI Response: </b></h5>
+              <span>{{gpt_response}}</span>
+              <br><br>
 
-    <label class="form-label" for="customFile">System Answer:</label>
-    <textarea type="" class="form-control" id="gpt_answer" rows="20" placeholder="The Answer To Your Prompt..."></textarea>
+            </div>
 
-</div>
+            <div class="pb-5 d-none" id="loader">
+              <div class="myspinner">
+                <div class="spinner-border" role="status">
+                </div>
+              </div>
+              <div class="mx-auto text-center">
+                <b>TrendyAI is generating an answer, please wait...</b>
+              </div>
+            </div>
+            
+            <label class="form-label" for="user_prompt">Enter your query here:</label>
+            <input type="text" name="user_prompt" class="form-control" id="user_prompt" placeholder="Enter your query here:">
+            <input type="submit" id="submit_btn" value="Ask TrendyAI" class="btn btn-outline-primary mt-3 active" onclick="send_query()">
+
+        </div>
 
       </div>
     </div>
   </div>
+
+  <script>
+    function send_query() {
+
+      if (document.getElementById("user_prompt").value == "") {
+        alert("Please enter a query!");
+        return;
+      }
+
+      // Show the loader
+      document.getElementById("loader").classList.remove("d-none");
+
+      // Disable the submit button
+      document.getElementById("submit_btn").classList.add("disabled");
+
+      var user_prompt = document.getElementById("user_prompt").value;
+
+      // SEND USING AXIOS - SEND OVER THE USER_PROMPT AND THE IMAGE_FILENAME
+      axios.post('/new_query', {
+        user_prompt: user_prompt,
+        image_filename: "{{ image_filename }}"
+      })
+      .then(function (response) {
+        document.getElementById("chat_history").innerHTML += "<h5 class='text-primary'><b>User Query: </b></h5><span>" + user_prompt + "</span><br><br><h5 class='text-secondary'><b>TrendyAI Response: </b></h5><span>" + response.data.gpt_response + "</span><br><br>";
+
+        // Hide the loader
+        document.getElementById("loader").classList.add("d-none");
+
+        // Clear the user prompt
+        document.getElementById("user_prompt").value = "";
+
+        // Enable the submit button
+        document.getElementById("submit_btn").classList.remove("disabled");
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("Error while generating answer!\n\n" + "Error: " + error + "\n\nPlease try again in about 30 seconds. If the problem persists, please contact us.");
+
+        // Hide the loader
+        document.getElementById("loader").classList.add("d-none");
+
+        // Clear the user prompt
+        document.getElementById("user_prompt").value = "";
+
+        // Enable the submit button
+        document.getElementById("submit_btn").classList.remove("disabled");
+      });
+    }
+
+    function save_to_txt() {
+      // Get the content of the chat_history div
+      var chatHistoryContent = document.getElementById("chat_history").innerText;
+
+      // Create a Blob with the content
+      var blob = new Blob([chatHistoryContent], { type: "text/plain" });
+
+      // Create a download link
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "{{image_filename}}.txt";
+
+      // Append the link to the body
+      document.body.appendChild(a);
+
+      // Programmatically trigger the download
+      a.click();
+
+      // Remove the link from the body
+      document.body.removeChild(a);
+  }
+
+
+  </script>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="../../static/libs/jquery/dist/jquery.min.js"></script>
   <script src="../../static/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../static/js/sidebarmenu.js"></script>
@@ -247,3 +267,8 @@
 </body>
 
 </html>
+
+
+<!-- 
+  Option to save chat history to a file (txt)
+ -->

@@ -12,6 +12,14 @@
       max-height: 500px; /* Set a maximum height for the container */
       overflow-y: auto; /* Enable vertical scrollbar */
     }
+
+    .myspinner {
+      height: 10vh;
+      display:flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
   </style>
 </head>
 
@@ -58,78 +66,7 @@
                 <span class="hide-menu">Picture This!</span>
               </a>
             </li>
-            <!-- <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-alerts.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-alert-circle"></i>
-                </span>
-                <span class="hide-menu">Alerts</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-card.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-cards"></i>
-                </span>
-                <span class="hide-menu">Card</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-forms.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-file-description"></i>
-                </span>
-                <span class="hide-menu">Forms</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-typography.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-typography"></i>
-                </span>
-                <span class="hide-menu">Typography</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">AUTH</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-login.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-login"></i>
-                </span>
-                <span class="hide-menu">Login</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-register.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-user-plus"></i>
-                </span>
-                <span class="hide-menu">Register</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">EXTRA</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./icon-tabler.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-mood-happy"></i>
-                </span>
-                <span class="hide-menu">Icons</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./sample-page.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-aperture"></i>
-                </span>
-                <span class="hide-menu">Sample Page</span>
-              </a>
-            </li> -->
+            
           </ul>
 
         </nav>
@@ -206,35 +143,45 @@
         <p>Our system uses GPT-4 Vision to provide you a suitable response.</p>
 
 <div class="container mt-5">
-
-    <form method="POST" enctype="multipart/form-data" action="http://localhost:5003/upload_vision">
+    <form method="POST" enctype="multipart/form-data" action="/upload_vision">
 
         <!-- UPLOADING IMAGES -->
-        <label class="form-label" for="uploaded_image">Upload your image here:</label>
-        <input type="file" name="uploaded_image" class="form-control" id="uploaded_image" accept="image/*"/>
+        <label class="form-label" for="uploaded_images">Upload your image here:</label>
+        <input type="file" name="uploaded_image" class="form-control" id="uploaded_image" accept="image/*" required/>
         <br>
         
         <!-- USER PROMPT -->
         <label class="form-label" for="user_prompt">Enter your query here:</label>
-        <input type="text" name="user_prompt" class="form-control" id="user_prompt" placeholder="Enter your query here:">
+        <input type="text" name="user_prompt" class="form-control" id="user_prompt" placeholder="Enter your query here:" required>
 
         <!-- SUBMIT BUTTON -->
-        <input type="submit" value="Ask TrendyAI" class="btn btn-outline-primary mt-3 active">
+        <input type="submit" id="submit_btn" value="Ask TrendyAI" class="btn btn-outline-primary mt-3 active" onclick="display_loader()">
     </form>
-    <br>    
-    <br>
-    <br>
-    <br>
-
-
-    <label class="form-label" for="customFile">System Answer:</label>
-    <textarea type="" class="form-control" id="gpt_answer" rows="20" placeholder="The Answer To Your Prompt..."></textarea>
-
 </div>
+
+      <div class="pb-5 d-none" id="loader">
+        <div class="myspinner">
+          <div class="spinner-border" role="status">
+          </div>
+        </div>
+        <div class="mx-auto text-center">
+          <b>TrendyAI is generating an answer, please wait...</b>
+        </div>
+      </div>
 
       </div>
     </div>
   </div>
+
+  <script>
+    function display_loader() {
+      document.getElementById("loader").classList.remove("d-none");
+
+      // Don't let user resubmit form
+      document.getElementById("submit_btn").classList.add("disabled");
+    }
+  </script>
+
   <script src="../../static/libs/jquery/dist/jquery.min.js"></script>
   <script src="../../static/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../static/js/sidebarmenu.js"></script>
