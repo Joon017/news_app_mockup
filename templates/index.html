@@ -12,6 +12,69 @@
       max-height: 500px; /* Set a maximum height for the container */
       overflow-y: auto; /* Enable vertical scrollbar */
     }
+
+    /* The switch - the box around the slider */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 3px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(34px);
+      -ms-transform: translateX(34px);
+      transform: translateX(34px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
   </style>
 </head>
 
@@ -58,78 +121,6 @@
                 <span class="hide-menu">Picture This!</span>
               </a>
             </li>
-            <!-- <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-alerts.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-alert-circle"></i>
-                </span>
-                <span class="hide-menu">Alerts</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-card.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-cards"></i>
-                </span>
-                <span class="hide-menu">Card</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-forms.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-file-description"></i>
-                </span>
-                <span class="hide-menu">Forms</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-typography.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-typography"></i>
-                </span>
-                <span class="hide-menu">Typography</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">AUTH</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-login.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-login"></i>
-                </span>
-                <span class="hide-menu">Login</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-register.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-user-plus"></i>
-                </span>
-                <span class="hide-menu">Register</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">EXTRA</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./icon-tabler.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-mood-happy"></i>
-                </span>
-                <span class="hide-menu">Icons</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./sample-page.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-aperture"></i>
-                </span>
-                <span class="hide-menu">Sample Page</span>
-              </a>
-            </li> -->
           </ul>
 
         </nav>
@@ -190,15 +181,44 @@
       <div class="container-fluid">
 
         <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+
+
                   <div class="mb-3 mb-sm-0">
                     <h1> Quantum Computing </h1>
                   </div>
                   <div>
-                    <label class="form-label d-block mb-2">Select topic</label>
-                    <select class="form-select">
-                      <option value="1">Quantum Computing</option>
-                      <option value="2">Generative AI</option>
-                    </select>
+                    <div class="d-flex justify-content-between">
+                      
+                      <label class="form-label d-block mb-2">Default Mode:</label>
+                      
+                      <!-- Rounded switch -->
+                      <label class="switch h-50">
+                        <input type="checkbox" id="mode_checker" onclick="switch_mode()">
+                        <span class="slider round"></span>
+                        
+                      </label>
+                      
+                      
+                    </div>
+                    
+                    <div id="default_selections">
+                      <label class="form-label d-block mb-2">Select Topic:</label>
+                      <select class="form-select">
+                        <option value="1">Quantum Computing</option>
+                        <option value="2">Generative AI</option>
+                      </select>
+                    </div>
+
+                    <div id="user_input">
+                      <label class="form-label d-block mb-2">Enter Topic:</label>
+                      <select class="form-select">
+                        <option value="1">Quantum Computing</option>
+                        <option value="2">Generative AI</option>
+                      </select>
+                    </div>
+                    
+
+                    <label class="form-label d-block mb-2"></label>
                   </div>
                 </div>
 
@@ -558,6 +578,10 @@
       </div>
     </div>
   </div>
+
+  <script>
+  </script>
+
   <script src="../../static/libs/jquery/dist/jquery.min.js"></script>
   <script src="../../static/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../static/js/sidebarmenu.js"></script>
