@@ -189,13 +189,12 @@
                   <div>
                     <div class="d-flex justify-content-between">
                       
-                      <label class="form-label d-block mb-2">Default Mode:</label>
+                      <label id="mode_label" class="form-label d-block mb-2">Default Mode:</label>
                       
                       <!-- Rounded switch -->
-                      <label class="switch h-50">
+                      <label class="switch h-50" data-bs-toggle="popover" title="Mode Selection" data-bs-content="Click to toggle between 'Default' and 'Manual' Mode">
                         <input type="checkbox" id="mode_checker" onclick="switch_mode()">
                         <span class="slider round"></span>
-                        
                       </label>
                       
                       
@@ -209,16 +208,14 @@
                       </select>
                     </div>
 
-                    <div id="user_input">
+                    <div id="user_input" style="display: none;">
                       <label class="form-label d-block mb-2">Enter Topic:</label>
-                      <select class="form-select">
-                        <option value="1">Quantum Computing</option>
-                        <option value="2">Generative AI</option>
-                      </select>
+                      <!-- Text box for user to input topic -->
+                      <input type="text" class="form-control" id="input_prompt" placeholder="Enter topic here:">
                     </div>
                     
-
-                    <label class="form-label d-block mb-2"></label>
+                    <br>
+                    <button class="btn btn-outline-warning w-100 active" onclick="activate_scraper()">Scrape articles now!</button>
                   </div>
                 </div>
 
@@ -580,7 +577,57 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var popoverTriggerEl = document.querySelector('label[data-bs-toggle="popover"]');
+      var popover = new bootstrap.Popover(popoverTriggerEl, {
+        trigger: 'hover', // Show on hover
+        placement: 'top', // Position at the top
+      });
+    });
+
+    function switch_mode() {
+
+      var mode_checker = document.getElementById("mode_checker");
+
+      // IF unchecked -- default mode
+      if (mode_checker.checked == false) {
+        // Change the Text of the mode label
+        var mode_label = document.getElementById("mode_label");
+        mode_label.innerHTML = "Default Mode:";
+
+        // Hide the user input
+        var user_input = document.getElementById("user_input");
+        user_input.style.display = "none";
+
+        // Show the default selections
+        var default_selections = document.getElementById("default_selections");
+        default_selections.style.display = "block";
+      }
+
+      // IF checked -- manual mode
+      else {
+        // Change the Text of the mode label
+        var mode_label = document.getElementById("mode_label");
+        mode_label.innerHTML = "Manual Mode:";
+
+        // Hide the default selections
+        var default_selections = document.getElementById("default_selections");
+        default_selections.style.display = "none";
+
+        // Show the user input
+        var user_input = document.getElementById("user_input");
+        user_input.style.display = "block";
+      }
+
+    }
+
+
   </script>
+
+  <!-- Bootstrap JS (popper.js and bootstrap.js are required) -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
 
   <script src="../../static/libs/jquery/dist/jquery.min.js"></script>
   <script src="../../static/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -589,6 +636,8 @@
   <script src="../../static/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="../../static/libs/simplebar/dist/simplebar.js"></script>
   <script src="../../static/js/dashboard.js"></script>
+
+  
 </body>
 
 </html>
