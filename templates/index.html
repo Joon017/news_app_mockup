@@ -12,6 +12,69 @@
       max-height: 500px; /* Set a maximum height for the container */
       overflow-y: auto; /* Enable vertical scrollbar */
     }
+
+    /* The switch - the box around the slider */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 3px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(34px);
+      -ms-transform: translateX(34px);
+      transform: translateX(34px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
   </style>
 </head>
 
@@ -58,78 +121,6 @@
                 <span class="hide-menu">Picture This!</span>
               </a>
             </li>
-            <!-- <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-alerts.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-alert-circle"></i>
-                </span>
-                <span class="hide-menu">Alerts</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-card.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-cards"></i>
-                </span>
-                <span class="hide-menu">Card</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-forms.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-file-description"></i>
-                </span>
-                <span class="hide-menu">Forms</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./ui-typography.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-typography"></i>
-                </span>
-                <span class="hide-menu">Typography</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">AUTH</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-login.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-login"></i>
-                </span>
-                <span class="hide-menu">Login</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-register.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-user-plus"></i>
-                </span>
-                <span class="hide-menu">Register</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">EXTRA</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./icon-tabler.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-mood-happy"></i>
-                </span>
-                <span class="hide-menu">Icons</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./sample-page.html" aria-expanded="false">
-                <span>
-                  <i class="ti ti-aperture"></i>
-                </span>
-                <span class="hide-menu">Sample Page</span>
-              </a>
-            </li> -->
           </ul>
 
         </nav>
@@ -190,21 +181,130 @@
       <div class="container-fluid">
 
         <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+
+
                   <div class="mb-3 mb-sm-0">
                     <h1> Quantum Computing </h1>
                   </div>
                   <div>
-                    <label class="form-label d-block mb-2">Select topic</label>
-                    <select class="form-select">
-                      <option value="1">Quantum Computing</option>
-                      <option value="2">Generative AI</option>
-                    </select>
+                    <div class="d-flex justify-content-between">
+                      
+                      <label id="mode_label" class="form-label d-block mb-2">Default Mode:</label>
+                      
+                      <!-- Rounded switch -->
+                      <label class="switch h-50" data-bs-toggle="popover" title="Mode Selection" data-bs-content="Click to toggle between 'Default' and 'Manual' Mode">
+                        <input type="checkbox" id="mode_checker" onclick="switch_mode()">
+                        <span class="slider round"></span>
+                      </label>
+                      
+                      
+                    </div>
+                    
+                    <div id="default_selections">
+                      <label class="form-label d-block mb-2">Select Topic:</label>
+                      <select class="form-select">
+                        <option value="1">Quantum Computing</option>
+                        <option value="2">Generative AI</option>
+                      </select>
+                    </div>
+
+                    <div id="user_input" style="display: none;">
+                      <label class="form-label d-block mb-2">Enter Topic:</label>
+                      <!-- Text box for user to input topic -->
+                      <input type="text" class="form-control" id="input_prompt" placeholder="Enter topic here:">
+                    </div>
+                    
+                    <br>
+                    <button class="btn btn-outline-warning w-100 active" onclick="activate_scraper()">Scrape articles now!</button>
                   </div>
                 </div>
 
 
                   <button type="button" class="btn btn-outline-primary m-1 active">This week</button>
                   <button type="button" class="btn btn-outline-secondary m-1">This month</button>
+
+                  <br>
+                  <br>
+
+
+                  <div class="row">
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-9">
+                              <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">5</h3>
+                              </div>
+                            </div>
+                            <div class="col-3">
+                              <div class="icon icon-box-success ">
+                                <span class="mdi mdi-arrow-top-right icon-item"></span>
+                              </div>
+                            </div>
+                          </div>
+                          <h6 class="text-muted font-weight-normal">Trending topics</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-9">
+                              <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">2</h3>
+                              </div>
+                            </div>
+                            <div class="col-3">
+                              <div class="icon icon-box-success">
+                                <span class="mdi mdi-arrow-top-right icon-item"></span>
+                              </div>
+                            </div>
+                          </div>
+                          <h6 class="text-muted font-weight-normal">Unique from previous week</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-9">
+                              <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">121</h3>
+                              </div>
+                            </div>
+                            <div class="col-3">
+                              <div class="icon icon-box-danger">
+                                <span class="mdi mdi-arrow-bottom-left icon-item"></span>
+                              </div>
+                            </div>
+                          </div>
+                          <h6 class="text-muted font-weight-normal">Article analysed</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-9">
+                              <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">3</h3>
+                              </div>
+                            </div>
+                            <div class="col-3">
+                              <div class="icon icon-box-success ">
+                                <span class="mdi mdi-arrow-top-right icon-item"></span>
+                              </div>
+                            </div>
+                          </div>
+                          <h6 class="text-muted font-weight-normal">Article sources</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
         <br>
         <br>
@@ -228,8 +328,6 @@
           <br>
           <h6> Date Generated: 24/12/2023 </h6>
           <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-          <button type="button" class="btn btn-outline-secondary m-1">Save</button>
-
         </td>
 
 
@@ -242,7 +340,7 @@
         <td colspan="2">
           <p class="d-inline-flex gap-1">
   <a class="btn btn-outline-primary m-1" data-bs-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Show related articles
+    Show contributing articles
   </a>
 
 </p>
@@ -268,7 +366,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
 
@@ -283,7 +380,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
 
@@ -298,7 +394,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -312,7 +407,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -326,7 +420,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -340,7 +433,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -367,7 +459,7 @@
         <td colspan="2">
           <p class="d-inline-flex gap-1">
   <a class="btn btn-outline-primary m-1" data-bs-toggle="collapse" href="#collapseExample2" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Show related articles
+    Show contributing articles
   </a>
 
 </p>
@@ -393,7 +485,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
 
@@ -408,7 +499,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
 
@@ -423,7 +513,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -437,7 +526,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -451,7 +539,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -465,7 +552,6 @@
         </td>
         <td style="width: 20%">Picture</td>
           <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">Favourite</button>
             <button type="button" class="btn btn-outline-secondary m-1">View source</button>
           </td>
       </tr>
@@ -489,6 +575,60 @@
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var popoverTriggerEl = document.querySelector('label[data-bs-toggle="popover"]');
+      var popover = new bootstrap.Popover(popoverTriggerEl, {
+        trigger: 'hover', // Show on hover
+        placement: 'top', // Position at the top
+      });
+    });
+
+    function switch_mode() {
+
+      var mode_checker = document.getElementById("mode_checker");
+
+      // IF unchecked -- default mode
+      if (mode_checker.checked == false) {
+        // Change the Text of the mode label
+        var mode_label = document.getElementById("mode_label");
+        mode_label.innerHTML = "Default Mode:";
+
+        // Hide the user input
+        var user_input = document.getElementById("user_input");
+        user_input.style.display = "none";
+
+        // Show the default selections
+        var default_selections = document.getElementById("default_selections");
+        default_selections.style.display = "block";
+      }
+
+      // IF checked -- manual mode
+      else {
+        // Change the Text of the mode label
+        var mode_label = document.getElementById("mode_label");
+        mode_label.innerHTML = "Manual Mode:";
+
+        // Hide the default selections
+        var default_selections = document.getElementById("default_selections");
+        default_selections.style.display = "none";
+
+        // Show the user input
+        var user_input = document.getElementById("user_input");
+        user_input.style.display = "block";
+      }
+
+    }
+
+
+  </script>
+
+  <!-- Bootstrap JS (popper.js and bootstrap.js are required) -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+
   <script src="../../static/libs/jquery/dist/jquery.min.js"></script>
   <script src="../../static/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../static/js/sidebarmenu.js"></script>
@@ -496,6 +636,8 @@
   <script src="../../static/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="../../static/libs/simplebar/dist/simplebar.js"></script>
   <script src="../../static/js/dashboard.js"></script>
+
+  
 </body>
 
 </html>
