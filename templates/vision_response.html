@@ -197,12 +197,17 @@
       // Disable the submit button
       document.getElementById("submit_btn").classList.add("disabled");
 
+      // Get the user prompt
       var user_prompt = document.getElementById("user_prompt").value;
+
+      // Get Chat History 
+      var chat_history = document.getElementById("chat_history").innerHTML;
 
       // SEND USING AXIOS - SEND OVER THE USER_PROMPT AND THE IMAGE_FILENAME
       axios.post('/new_query', {
         user_prompt: user_prompt,
-        image_filename: "{{ image_filename }}"
+        image_filename: "{{ image_filename }}",
+        chat_history: chat_history
       })
       .then(function (response) {
         document.getElementById("chat_history").innerHTML += "<h5 class='text-primary'><b>User Query: </b></h5><span>" + user_prompt + "</span><br><br><h5 class='text-secondary'><b>TrendyAI Response: </b></h5><span>" + response.data.gpt_response + "</span><br><br>";

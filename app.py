@@ -35,8 +35,6 @@ def homepage():
 def vision_page():
     return render_template("vision.html")
 
-<<<<<<< Updated upstream
-=======
 @app.route('/upload_vision', methods=['POST'])
 def upload():
 
@@ -92,6 +90,7 @@ def new_query():
     data = request.get_json()
     prompt = data['user_prompt']
     image_filename = data['image_filename']
+    chat_history = data['chat_history']
 
     print(prompt)
     print(image_filename)
@@ -105,7 +104,7 @@ def new_query():
     endpoint = f"{base_url}/chat/completions?api-version=2023-12-01-preview" 
     data = { 
         "messages": [ 
-            { "role": "system", "content": "You are a helpful assistant." }, 
+            { "role": "system", "content": "You are a helpful assistant. The following HTML is the chat history prior to the new user query: \n\n" + chat_history + "\n\n form your responses based on the user query, the image and the chat history." }, 
             { "role": "user", "content": [  
                 { 
                     "type": "text", 
@@ -135,6 +134,5 @@ def new_query():
     return jsonify({'gpt_response': gpt_response})
 
 
->>>>>>> Stashed changes
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
