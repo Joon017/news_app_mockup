@@ -75,10 +75,24 @@
     .slider.round:before {
       border-radius: 50%;
     }
+
+    #popup-overlay {
+        position: fixed;
+        background-color: rgba(0, 0, 0, 0.685);
+        width: 100%;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 9998;
+        display: none;
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
   </style>
 </head>
 
 <body onload="populate_page()">
+
   <!--  Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
@@ -183,6 +197,17 @@
         <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
 
 
+          <!-- LOADING DIV FOR NEWSLETTER GENERATION -->
+
+          <div id="popup-overlay" class="mx-auto pt-5">
+            <h1 style="color: white; text-align: center;">Generating Newsletter, please wait for a moment...</h1>
+            <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status" style="width: 5rem; height: 5rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          </div>
+
                   <div class="mb-3 mb-sm-0">
                     <h1 id="default_topic_label"> Quantum Computing </h1>
                   </div>
@@ -200,7 +225,7 @@
                       
                     </div>
                     
-                    <div>
+                    <div id="default_selections">
                       <label class="form-label d-block mb-2">Select Topic:</label>
                       <select class="form-select" onchange="change_topic()" id="default_topic_select">
                         <option value="1">Quantum Computing</option>
@@ -211,7 +236,7 @@
                     <div id="user_input" style="display: none;">
                       <label class="form-label d-block mb-2">Enter Topic:</label>
                       <!-- Text box for user to input topic -->
-                      <input type="text" class="form-control" id="input_prompt" placeholder="Enter topic here:">
+                      <input type="text" class="form-control" id="input_prompt" placeholder="Enter topic here:" oninput="change_topic_manual()">
                     </div>
                     
                     <br>
@@ -352,8 +377,10 @@
 
     function switch_mode() {
 
-      var mode_checker = document.getElementById("mode_checker");
+      console.log("Switching mode...");
 
+      var mode_checker = document.getElementById("mode_checker");
+      
       // IF unchecked -- default mode
       if (mode_checker.checked == false) {
         // Change the Text of the mode label
@@ -367,6 +394,14 @@
         // Show the default selections
         var default_selections = document.getElementById("default_selections");
         default_selections.style.display = "block";
+
+        // Change the label to "Quantum Computing"
+        var default_topic_label = document.getElementById("default_topic_label");
+        default_topic_label.innerHTML = "Quantum Computing";
+
+        // Change the sublabel to "Quantum Computing"
+        var default_topic_sublabel = document.getElementById("default_topic_sublabel");
+        default_topic_sublabel.innerHTML = "Quantum Computing";
       }
 
       // IF checked -- manual mode
@@ -382,6 +417,14 @@
         // Show the user input
         var user_input = document.getElementById("user_input");
         user_input.style.display = "block";
+
+        // Change the label to "(Enter Topic In Text Box)"
+        var default_topic_label = document.getElementById("default_topic_label");
+        default_topic_label.innerHTML = "(Enter Topic In Text Box)";
+
+        // Change the sublabel to "(Enter Topic In Text Box)"
+        var default_topic_sublabel = document.getElementById("default_topic_sublabel");
+        default_topic_sublabel.innerHTML = "(Enter Topic In Text Box)";
       }
 
     }
@@ -418,6 +461,22 @@
 
     }
 
+    function change_topic_manual() {
+
+      // GET USER INPUT FROM TEXTBOX
+      var input_prompt = document.getElementById("input_prompt");
+      var user_input = input_prompt.value;
+
+      // Change the label to user input
+      var default_topic_label = document.getElementById("default_topic_label");
+
+      // Change the sublabel to user input
+      var default_topic_sublabel = document.getElementById("default_topic_sublabel");
+
+      default_topic_label.innerHTML = user_input;
+      default_topic_sublabel.innerHTML = user_input;
+    }
+
     function populate_page() {
     
       url_route = 'http://localhost:5000/get_trends'
@@ -440,9 +499,6 @@
             articles = metadata['articles']
             write_up = metadata['write_up']
             date_generated = metadata['date_generated']
-
-            console.log(write_up);
-            console.log(date_generated);
 
             var temp_html = 
               `<tr>
@@ -515,9 +571,52 @@
     }
 
     function generate_newsletter() {
-      
-    }
 
+      document.getElementById("popup-overlay").style.display = "block";
+
+      url = 'http://localhost:5000/generate_newsletter'
+
+      // Fetch the data from the API using GET
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+          newsletter = data['newsletter']
+
+          // Replace "\n" with actual new lines
+          const formattedContent = newsletter.replace(/\\n/g, '\n');
+
+          // Create a blob with the content
+          var blob = new Blob([formattedContent], { type: "text/plain" });
+          
+          // Create a download link
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "newsletter.txt";
+
+          // Append the link to the body
+          document.body.appendChild(a);
+
+          // Programmatically trigger the download
+          a.click();
+
+          // Remove the link from the body
+          document.body.removeChild(a);
+
+          document.getElementById("popup-overlay").style.display = "none";
+      })
+        .catch((error) => {
+          console.error('Error:', error);
+
+          document.getElementById("popup-overlay").style.display = "none";
+        });
+
+    }
   </script>
 
   <!-- Bootstrap JS (popper.js and bootstrap.js are required) -->
