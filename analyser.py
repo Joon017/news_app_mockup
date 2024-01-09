@@ -5,8 +5,10 @@ import json
 import pymongo
 from bson import ObjectId
 from openai import OpenAI
+# from openai import AzureOpenAI
 from sentence_transformers import SentenceTransformer
 import time
+from datetime import date 
 
 embedding_model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
 
@@ -23,7 +25,10 @@ app = Flask(__name__)
 CORS(app)
 
 # OPENAI
-openai_client = OpenAI(api_key = "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")
+openai_client = OpenAI(api_key = "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")
+
+# AZURE OPENAI
+# openai_client = AzureOpenAI(api_key="cfd349e9242e4495bad6aa347a16b0c9",azure_endpoint="https://chatbotapi1.openai.azure.com",api_version='2023-05-15')
 
 
 # CONNECT TO MONGO
@@ -262,7 +267,6 @@ def upload_articles():
 
     all_summarised_articles = ""
 
-
     for article in all_articles:
         
       # embedding_generated = False
@@ -287,7 +291,8 @@ def upload_articles():
         article_url = article["article_url"]
         publish_date = article["publish_date"]
         scraped_date = article["scraped_date"]
-        
+
+        # OPENAI
         completion = openai_client.chat.completions.create(
             model="gpt-3.5-turbo-16k",
             messages=[
@@ -295,6 +300,17 @@ def upload_articles():
                 {"role": "user", "content": "Given the following article title: " + title + ", category: " + topic + ", and summarised content: " + content + ", please summarise the content in 30 words or less."}
             ]
         )
+
+        # AZURE OPENAI
+        # completion = openai_client.chat.completions.create(
+        #     model="gpt-35-2",
+        #     engine="gpt35_16",
+        #     messages=[
+        #         {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
+        #         {"role": "user", "content": "Given the following article title: " + title + ", category: " + topic + ", and summarised content: " + content + ", please summarise the content in 30 words or less."}
+        #     ]
+        # )
+
         summarised_content = completion.choices[0].message.content
         print(summarised_content)
         article_summarised = True
@@ -342,37 +358,170 @@ def upload_articles():
             except Exception as e:
                 print("Error inserting article: ", str(e))
 
-        time.sleep(20)
+        time.sleep(16)
 
     # To OBTAIN A SUMMARY OF ALL ARTICLES OF THE CURRENT SOURCE
     # To OBTAIN MAIN TRENDS USING GPT
     completion = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-3.5-turbo-16k",
         messages=[
             {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
-            {"role": "user", "content": "Given the following articles: \n\n" + all_summarised_articles + "\n\n\n, summarise and extract out from the articles 1 to 5 trends that you observe, with each being 10 words or less. Have the trends be more general and less specific. An example of a general trend is as follows: 'Generative AI revolutionizes content creation with powerful neural networks.', and an example of a more specific trend is as follows: 'Google is making use of AI Generated Music'. List out the trends in the following format: \n\n1. Trend 1||Short description and explanation of trend 1\n2. Trend 2||Short description and explanation of trend 2\n3. Trend 3||Short description and explanation of trend 3 etc...."}
+            {"role": "user", "content": "Given the following articles: \n\n" + all_summarised_articles + "\n\n, extract 5 trends that you observe from these articles, with each trend being 10 words or less. Additionally, for each trend, create a short write-up of about 75 words elaborating the trend. Have the trends be more general and less specific. An example of a general trend is as follows: 'Generative AI revolutionizes content creation with powerful neural networks.', and an example of a more specific trend is as follows: 'Google is making use of AI Generated Music'. List out the trends in the following format, where each trend and write up are in 1 sentence but delimeted by a semicolon (;) : \n\n 1. Short description and explanation of trend 1;Write-up for Trend 1.\n2. Short description and explanation of trend 2;Write-up for Trend 2.\n3. Short description and explanation of trend 3;Write-up for Trend 3 \n\n and so on"}
         ]
     )
 
+    # AZURE OPENAI
+    # completion = openai_client.chat.completions.create(
+    #     model="gpt-35-2",
+    #     engine="gpt35_16",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant. You are knowledgeable about the latest news in the fields of quantum computing and generative AI."},
+    #         {"role": "user", "content": "Given the following articles: \n\n" + all_summarised_articles + "\n\n\n, summarise and extract out from the articles 1 to 5 trends that you observe, with each trend being 10 words or less. Additionally, create a short write-up of about 75 words elaborating the trend. Have the trends be more general and less specific. An example of a general trend is as follows: 'Generative AI revolutionizes content creation with powerful neural networks.', and an example of a more specific trend is as follows: 'Google is making use of AI Generated Music'. List out the trends in the following format: \n\n 1. Short description and explanation of trend 1;{Write-up for Trend 1}\n2. Short description and explanation of trend 2;{Write-up for Trend 2}\n3. Short description and explanation of trend 3;{Write-up for Trend 3} \n\n and so on"}
+    #     ]
+    # )
+
     trends = completion.choices[0].message.content
+
+    print(trends)
 
     # SPLIT TRENDS INTO AN ARRAY OF TRENDS
     trends_list = trends.split("\n")
     print(trends_list)
 
     # REMOVE THE NUMBERS FROM THE TRENDS
-    # trends_arr = []
-    # for trend in trends_list:
-    #     # FIND THE INDEX OF THE FIRST FULL STOP
-    #     index = trend.find(".")
-    #     # REMOVE THE NUMBER FROM THE TRENDS
-    #     trends_arr.append(trend[index+2:])
+    trends_arr = []
+    for trend in trends_list:
+        # FIND THE INDEX OF THE FIRST FULL STOP
+        index = trend.find(".")
+        # REMOVE THE NUMBER FROM THE TRENDS
+        trend = trend[index+2:]
+
+        print(trend)
+
+        # FIND THE SEMICOLON TO SEPARATE THE TRENDS FROM THE WRITE-UPS
+        semicolon_index = trend.find(";")
+        trend_item = trend[:semicolon_index]
+        write_up = trend[semicolon_index+1:]
+
+        # print("----------------TREND----------------")
+        # print(trend[:semicolon_index])
+        # print("----------------WRITE-UP----------------")
+        # print(trend[semicolon_index+1:])
+
+        today = date.today()
+        
+        # MAKE A NEW OBJECT TO STORE THE TRENDS AND WRITE-UPS
+        trend_obj = {
+            "trend": trend_item,
+            "write_up": write_up,
+            "date_generated": today.strftime("%d-%m-%Y"),
+            "articles": []
+        }
+
+        # APPEND THE TRENDS OBJECT TO THE TRENDS ARRAY
+        trends_arr.append(trend_obj)
+
+    # FILTER OUT OBJECTS WHERE EITHER THE TREND OR WRITE-UP IS EMPTY
+    trends_arr = list(filter(lambda trend: trend["trend"] != "" and trend["write_up"] != "", trends_arr))
+
+    # START ASSOCIATING TRENDS WITH ARTICLES
+    
+    # Create the Atlas Search index for the vector field (article_embedding)
+    articles_collection.create_index(
+      [("article_embedding", "text")],
+      weights={"article_embedding": 1},
+      default_language="english"
+    )
+
+    # Get the list of indexes for the collection
+    indexes = articles_collection.list_indexes()
+    # print("List of indexes for the collection:")
+    # print(list(indexes))
+
+    for trend in trends_arr:
+
+      # GET THE TREND
+      trend_name = trend["trend"]
+
+      query_sentence = trend_name
+
+      query_vector = (embedding_model.encode(query_sentence)).tolist()
+      # Perform a vector search
+      result = articles_collection.find(
+          {
+              "article_embedding": {
+                  "$vector": {
+                      "$search": {"$vector": query_vector},
+                      "$score": {"$meta": "searchScore"}
+                  }
+              }
+          }
+      ).sort([("score", {"$meta": "searchScore"})])
+
+      results = articles_collection.aggregate([
+        {"$vectorSearch": {
+          "queryVector": query_vector,
+          "path": "article_embedding",
+          "numCandidates": 100,
+          "limit": 5,
+          "index": "vector_index",
+            }}
+      ])
+
+      for document in results:
+        # GET THE OBJECT ID OF THE DOCUMENT
+        document_id = document.get('_id')
+
+        # GET THE DOCUMENT FROM THE COLLECTION
+        curr_document = articles_collection.find_one({'_id': ObjectId(document_id)})
+
+        # UPDATE TRENDS ARRAY IN THE DOCUMENT
+        curr_document_trends = curr_document["trends"]
+
+        # New Object to store trend + write up
+        trend_obj = {
+            "trend": trend_name,
+            "write_up": trend["write_up"]
+        }
+
+        curr_document_trends.append(trend_obj)
+
+        # UPDATE THE DOCUMENT IN THE COLLECTION
+        articles_collection.update_one({'_id': ObjectId(document_id)}, {"$set": {"trends": curr_document_trends}})
+
+        # CREATE SIMPLIFIED DOCUMENT OBJECT
+        simplified_document = {
+          "title": curr_document["title"],
+          "topic": curr_document["topic"],
+          "content": curr_document["content"],
+          "source": curr_document["source"],
+          "source_url": curr_document["source_url"],
+          "article_url": curr_document["article_url"],
+          "publish_date": curr_document["publish_date"],
+          "scraped_date": curr_document["scraped_date"]
+        }
+
+        # APPEND THE DOCUMENT TO THE TRENDS OBJECT
+        trend["articles"].append(simplified_document)
+
+        
+        
+
+    # RETURN JSON RESPONSE
+    return jsonify({
+        "code": 200,
+        "message": "Articles summarised and embedded successfully",
+        "trends": trends_arr
+    }), 200
+
+
+
 
     # print(trends_arr)
 
     # print(all_summarised_articles)
 
-    return trends_list
+    # return trends_list
     # # IF COLLETION EXISTS - DELETE IT
     # if "articles_collection" in chroma_client.list_collections():
     #     chroma_client.delete_collection(name="articles_collection")
@@ -383,7 +532,7 @@ def upload_articles():
     # all_articles_summarised = []
     
 
-    # # ITERATE THROUGH ALL ARTICLES IN ALL_ARTICLES
+    # ITERATE THROUGH ALL ARTICLES IN ALL_ARTICLES
     # for articles in all_articles:
         
     #     # ITERATE THROUGH ALL ARTICLES IN EACH SOURCE
@@ -552,9 +701,4 @@ def upload_articles():
 
 
 if __name__ == "__main__":
-    app.run(port=5002, debug=True)
-
-
-
-
-
+  app.run(port=5002, debug=True)

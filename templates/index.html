@@ -78,7 +78,7 @@
   </style>
 </head>
 
-<body>
+<body onload="populate_page()">
   <!--  Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
@@ -184,7 +184,7 @@
 
 
                   <div class="mb-3 mb-sm-0">
-                    <h1> Quantum Computing </h1>
+                    <h1 id="default_topic_label"> Quantum Computing </h1>
                   </div>
                   <div>
                     <div class="d-flex justify-content-between">
@@ -200,9 +200,9 @@
                       
                     </div>
                     
-                    <div id="default_selections">
+                    <div>
                       <label class="form-label d-block mb-2">Select Topic:</label>
-                      <select class="form-select">
+                      <select class="form-select" onchange="change_topic()" id="default_topic_select">
                         <option value="1">Quantum Computing</option>
                         <option value="2">Generative AI</option>
                       </select>
@@ -217,352 +217,117 @@
                     <br>
                     <button class="btn btn-outline-warning w-100 active" onclick="activate_scraper()">Scrape articles now!</button>
                   </div>
-                </div>
+        </div>
 
 
-                  <button type="button" class="btn btn-outline-primary m-1 active">This week</button>
-                  <button type="button" class="btn btn-outline-secondary m-1">This month</button>
+        <button type="button" class="btn btn-outline-primary m-1 active">This week</button>
+        <button type="button" class="btn btn-outline-secondary m-1">This month</button>
 
-                  <br>
-                  <br>
+        <br>
+        <br>
 
 
-                  <div class="row">
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-9">
-                              <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0">5</h3>
-                              </div>
-                            </div>
-                            <div class="col-3">
-                              <div class="icon icon-box-success ">
-                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                              </div>
-                            </div>
-                          </div>
-                          <h6 class="text-muted font-weight-normal">Trending topics</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-9">
-                              <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0">2</h3>
-                              </div>
-                            </div>
-                            <div class="col-3">
-                              <div class="icon icon-box-success">
-                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                              </div>
-                            </div>
-                          </div>
-                          <h6 class="text-muted font-weight-normal">Unique from previous week</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-9">
-                              <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0">121</h3>
-                              </div>
-                            </div>
-                            <div class="col-3">
-                              <div class="icon icon-box-danger">
-                                <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                              </div>
-                            </div>
-                          </div>
-                          <h6 class="text-muted font-weight-normal">Article analysed</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-9">
-                              <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0">3</h3>
-                              </div>
-                            </div>
-                            <div class="col-3">
-                              <div class="icon icon-box-success ">
-                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                              </div>
-                            </div>
-                          </div>
-                          <h6 class="text-muted font-weight-normal">Article sources</h6>
-                        </div>
-                      </div>
+        <div class="row">
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                      <h3 class="mb-0">5</h3>
                     </div>
                   </div>
+                  <div class="col-3">
+                    <div class="icon icon-box-success ">
+                      <span class="mdi mdi-arrow-top-right icon-item"></span>
+                    </div>
+                  </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Trending topics</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                      <h3 class="mb-0">2</h3>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="icon icon-box-success">
+                      <span class="mdi mdi-arrow-top-right icon-item"></span>
+                    </div>
+                  </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Unique from previous week</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                      <h3 class="mb-0">121</h3>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="icon icon-box-danger">
+                      <span class="mdi mdi-arrow-bottom-left icon-item"></span>
+                    </div>
+                  </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Article analysed</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                      <h3 class="mb-0">3</h3>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="icon icon-box-success ">
+                      <span class="mdi mdi-arrow-top-right icon-item"></span>
+                    </div>
+                  </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Article sources</h6>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <br>
         <br>
-                  <h3> Trends this week </h3>
-                  <p>The latest developments in the field of Quantum Computing this week</p>
+
+        <div class="d-flex justify-content-between">
+          <div>
+            <h3> Trends this week </h3>
+            <p>The latest developments in the field of 
+              <span id="default_topic_sublabel">Quantum Computing</span>
+              this week</p>
+          </div>
+          
+
+          <button class="btn btn-success fs-4" onclick="generate_newsletter()">Generate Newsletter</button>
+        </div>
+        
 
 <div class="container mt-5">
   <div class="table-container">
     <table class="table">
-      <thead>
-        <tr>
-
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Add more rows as needed -->
-        <!-- ... -->
-
-        <tr>
-        <td style="width: 80%"> <h5>  Quantum Breakthrough: Research Team Achieves Record Quantum Volume, Paving the Way for More Powerful Computing. </h5>
-          <br>
-          <h6> Date Generated: 24/12/2023 </h6>
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-
-
-        <td style="width: 20%">
-          <img src="../../static/images/products/s5.jpg" alt="" width="100" height="100">
-
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <p class="d-inline-flex gap-1">
-  <a class="btn btn-outline-primary m-1" data-bs-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Show contributing articles
-  </a>
-
-</p>
-<div class="collapse" id="collapseExample1">
-  <div class="card card-body">
-<table class="table">
-      <thead>
-        <tr>
-
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Add more rows as needed -->
-        <!-- ... -->
-
-        <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-
-      </tbody>
-    </table>
-  </div>
-</div>
-        </td>
-      </tr>
-      <tr>
-        <td style="width: 70%"> <h5>  Quantum Breakthrough: Research Team Achieves Record Quantum Volume, Paving the Way for More Powerful Computing. </h5>
-          <br>
-          <h6> Date Generated: 24/12/2023 </h6>
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-
-
-        <td style="width: 30%">
-          <img src="../../static/images/products/s5.jpg" alt="" width="100" height="100">
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <p class="d-inline-flex gap-1">
-  <a class="btn btn-outline-primary m-1" data-bs-toggle="collapse" href="#collapseExample2" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Show contributing articles
-  </a>
-
-</p>
-<div class="collapse" id="collapseExample2">
-  <div class="card card-body">
-<table class="table">
-      <thead>
-        <tr>
-
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Add more rows as needed -->
-        <!-- ... -->
-
-        <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-      <tr>
-        <td style="width: 60%"> <h5>  Article 1 </h5>
-                <br>
-          <h6> Source: TechXplore </h6>
-          <h6> Date Posted: 24/12/2023 </h6>
-
-          <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam blanditiis, commodi, cupiditate doloremque doloribus ea expedita facere illo in ipsam magni molestiae nesciunt odit quam quibusdam repellendus totam voluptas voluptatibus.</p>
-        </td>
-        <td style="width: 20%">Picture</td>
-          <td style="width: 20%">
-            <button type="button" class="btn btn-outline-secondary m-1">View source</button>
-          </td>
-      </tr>
-
-      </tbody>
-    </table>
-  </div>
-</div>
-        </td>
-      </tr>
-
+      <thead></thead>
+      <!-- WHERE ALL THE TRENDS WILL GO -->
+      <tbody id="main_body">
       </tbody>
     </table>
   </div>
@@ -621,6 +386,137 @@
 
     }
 
+    function change_topic() {
+      
+      // Get the selected topic
+      var topic_select = document.getElementById("default_topic_select");
+
+      // Check if the selected topic is "Generative AI"
+      if (topic_select.value == 2) {
+
+        // Change the label to "Generative AI"
+        var default_topic_label = document.getElementById("default_topic_label");
+        default_topic_label.innerHTML = "Generative AI";
+
+        // Change the sublabel to "Generative AI"
+        var default_topic_sublabel = document.getElementById("default_topic_sublabel");
+        default_topic_sublabel.innerHTML = "Generative AI";
+      }
+
+      // Check if the selected topic is "Quantum Computing"
+      else if (topic_select.value == 1) {
+
+        // Change the label to "Quantum Computing"
+        var default_topic_label = document.getElementById("default_topic_label");
+        default_topic_label.innerHTML = "Quantum Computing";
+
+        // Change the sublabel to "Quantum Computing"
+        var default_topic_sublabel = document.getElementById("default_topic_sublabel");
+        default_topic_sublabel.innerHTML = "Quantum Computing";
+      }
+
+
+    }
+
+    function populate_page() {
+    
+      url_route = 'http://localhost:5000/get_trends'
+
+      // Fetch the data from the API using GET
+      fetch(url_route, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          // console.log('Success:', data);
+
+          // Iterate through data object, where key is trend and value is array of articles
+          for(trendname in data){
+            metadata = data[trendname]
+
+            articles = metadata['articles']
+            write_up = metadata['write_up']
+            date_generated = metadata['date_generated']
+
+            console.log(write_up);
+            console.log(date_generated);
+
+            var temp_html = 
+              `<tr>
+                <td style="width: 80%"> 
+                  <h5>${trendname}</h5>
+                  <br>
+                  <h6> Date Generated: ${date_generated}</h6>
+                  <p>${write_up}</p>
+                </td>
+              </tr>
+              <tr>
+
+              <td colspan="2">
+                <p class="d-inline-flex gap-1">
+                  <a class="btn btn-outline-primary m-1" data-bs-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample1">
+                    Show contributing articles
+                  </a>
+                </p>
+                <div class="collapse" id="collapseExample1">
+                  <div class="card card-body">
+                    <table class="table">
+                      <thead></thead>
+                      <tbody>
+              `
+
+              articles.forEach(article => {
+                temp_html += 
+                `
+                <tr>
+                  <td style="width: 60%"> 
+                    <h4>${article["title"]}</h4>
+                    <br>
+                    <h5>Topic: ${article["topic"]}</h5>
+                    <h6> Source: ${article["source"]} (${article["source)_url"]}) </h6>
+                    <h6> Date Published: ${article["publish_date"]} </h6>
+                    <h6> Date Scraped: ${article["scraped_date"]} </h6>
+
+                    <p>${article["content"]}</p>
+                  </td>
+                
+                  <td></td>
+
+                  <td style="width: 20%">
+                    <a href="${article["article_url"]}" class="btn btn-outline-secondary m-1">View Source</a>
+                  </td>
+
+                </tr>
+                ` 
+              });
+
+              temp_html += 
+              `
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              `
+
+              document.getElementById("main_body").innerHTML += temp_html
+
+          }
+          
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+    }
+
+    function generate_newsletter() {
+      
+    }
 
   </script>
 
