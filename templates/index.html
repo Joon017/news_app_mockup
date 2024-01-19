@@ -233,14 +233,15 @@
                       </select>
                     </div>
 
+                    <!-- Text box for user to input topic -->
                     <div id="user_input" style="display: none;">
                       <label class="form-label d-block mb-2">Enter Topic:</label>
-                      <!-- Text box for user to input topic -->
-                      <input type="text" class="form-control" id="input_prompt" placeholder="Enter topic here:" oninput="change_topic_manual()">
+                      <input type="text" class="form-control" id="input_prompt" name="search_query" placeholder="Enter topic here:" oninput="change_topic_manual()">
                     </div>
                     
+                  
                     <br>
-                    <button class="btn btn-outline-warning w-100 active" onclick="activate_scraper()">Scrape articles now!</button>
+                    <button class="btn btn-outline-warning w-100 active" onclick="">Scrape articles now!</button>
                   </div>
         </div>
 
@@ -617,6 +618,7 @@
         });
 
     }
+
   </script>
 
   <!-- Bootstrap JS (popper.js and bootstrap.js are required) -->

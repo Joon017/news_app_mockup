@@ -59,6 +59,8 @@ def fetch_html(url):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
+
 # VENTUREBEAT SCRAPER
 def venturebeat_scraping(cutoff_date, pages):
     scraped_articles = []
@@ -166,6 +168,8 @@ def venturebeat_scraping(cutoff_date, pages):
     scraped_articles_json = json.dumps(scraped_articles, indent=2)
     return scraped_articles_json
 
+
+
 #TECHXPLORE SCRAPER
 def techxplore_scraping(cutoff_date, pages):
     scraped_articles = []
@@ -258,6 +262,8 @@ def techxplore_scraping(cutoff_date, pages):
 
     scraped_articles_json = json.dumps(scraped_articles, indent=2)
     return scraped_articles_json
+
+
 
 #TECHXPLORE SCRAPER
 def zdnet_scraping(cutoff_date, pages):
@@ -371,12 +377,13 @@ def zdnet_scraping(cutoff_date, pages):
     scraped_articles_json = json.dumps(scraped_articles, indent=2)
     return scraped_articles_json
 
+
 # LAUNCHING SCRAPER OF VENTUREBEATS
-# start_time = time.time()
-# print(venturebeat_scraping(cutoff_date="10-01-2024", pages=max_pages))
-# end_time = time.time()
-# elapsed_time = end_time - start_time
-# print(f"Time taken: {elapsed_time} seconds")
+start_time = time.time()
+print(venturebeat_scraping(cutoff_date="10-01-2024", pages=max_pages))
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Time taken: {elapsed_time} seconds")
 
 #LAUNCHING SCRAPER OF TECHXPLORE
 # print(techxplore_scraping(cutoff_date="15-12-2023", pages=max_pages))
