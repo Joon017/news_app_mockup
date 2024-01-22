@@ -9,6 +9,13 @@ from sentence_transformers import SentenceTransformer
 import time
 from openai import AzureOpenAI
 
+# Packages required for Vision:
+import requests 
+import json
+import base64
+from PIL import Image
+from io import BytesIO
+
 client = AzureOpenAI(api_key="cfd349e9242e4495bad6aa347a16b0c9", 
                     azure_endpoint="https://chatbotapi1.openai.azure.com",
                     api_version='2023-05-15')
