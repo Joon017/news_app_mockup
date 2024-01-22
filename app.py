@@ -38,6 +38,16 @@ news_scraper_db = mongo_client.get_database('NewsScraper')
 # COLLECTIONS IN DB
 articles_collection = news_scraper_db.get_collection('Articles')
 
+api_base = "https://chatgpt4vision.openai.azure.com/" 
+deployment_name = "GPT-4-Vision"
+API_KEY = "1f0880c2f35c418b9b50489e485093a4"
+
+base_url = f"{api_base}openai/deployments/{deployment_name}" 
+headers = {   
+    "Content-Type": "application/json",   
+    "api-key": API_KEY 
+} 
+
 @app.route('/')
 def homepage():
     return render_template("index.html")
