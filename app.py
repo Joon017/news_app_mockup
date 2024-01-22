@@ -185,6 +185,124 @@ def generate_newsletter():
         'newsletter': newsletter,
         'status': 200
     })
+
+@app.route('/upload_vision_dxc', methods=['POST'])
+def upload_vision_dxc():
+
+    print("upload_vision_dxc called")
+
+    # GET PROMPT AND UPLOADED FROM REQUEST
+    user_prompt = request.form['user_prompt']
+    uploaded_image = request.files['uploaded_image']
+
+    # GET IMAGE FILENAME FROM REQUEST
+    image_filename = uploaded_image.filename
+
+    # SAVE IMAGE TO UPLOADS FOLDER
+    uploaded_image.save('static/images/uploads/' + image_filename)
+
+    # # CONVERT IMAGE TO BASE64
+    path = 'static/images/uploads/' + image_filename
+    with open(path, "rb") as image_file:
+        sImagedata = base64.b64encode(image_file.read()).decode('ascii')
+        
+    # Prepare endpoint, headers, and request body 
+    endpoint = f"{base_url}/chat/completions?api-version=2023-12-01-preview" 
+    data = { 
+        "messages": [ 
+            { "role": "system", "content": "You are a helpful assistant." }, 
+            { "role": "user", "content": [  
+                { 
+                    "type": "text", 
+                    "text": user_prompt
+                },
+                { 
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{sImagedata}"
+                    }
+                }
+            ] } 
+        ], 
+        "max_tokens": 2000 
+    }   
+
+    # Make the API call   
+    response = requests.post(endpoint, headers=headers, data=json.dumps(data))   
+
+    print(f"Status Code: {response.status_code}")   
+    print("-----")
+    gpt_response = response.json()['choices'][0]['message']['content']
+    print(gpt_response)
+    print("-----")
+    print(image_filename)
+    print("-----")
+    print(user_prompt)
+
+    # return render_template('vision_response.html', user_prompt=prompt, gpt_response=gpt_response, image_filename=image_filename)
+    return jsonify({'gpt_response': gpt_response,
+                    'image_filename': image_filename,
+                    'image_data': sImagedata,
+                    'user_prompt': user_prompt
+                    })
+
+@app.route('/vision_new_query_dxc', methods=['POST'])
+def vision_new_query_dxc():
+
+    print("vision_new_query_dxc called")
+
+    # GET PROMPT AND UPLOADED FROM REQUEST
+    user_prompt = request.form['user_prompt']
+    image_data = request.form['image_data']
+    image_filename = request.form['image_filename']
+
+    # # GET IMAGE FILENAME FROM REQUEST
+    # image_filename = uploaded_image.filename
+
+    # SAVE IMAGE TO UPLOADS FOLDER
+    # uploaded_image.save('static/images/uploads/' + image_filename)
+
+    # # CONVERT IMAGE TO BASE64
+    path = 'static/images/uploads/' + image_filename
+    with open(path, "rb") as image_file:
+        sImagedata = base64.b64encode(image_file.read()).decode('ascii')
+        
+    # Prepare endpoint, headers, and request body 
+    endpoint = f"{base_url}/chat/completions?api-version=2023-12-01-preview" 
+    data = { 
+        "messages": [ 
+            { "role": "system", "content": "You are a helpful assistant." }, 
+            { "role": "user", "content": [  
+                { 
+                    "type": "text", 
+                    "text": user_prompt
+                },
+                { 
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{sImagedata}"
+                    }
+                }
+            ] } 
+        ], 
+        "max_tokens": 2000 
+    }   
+
+    # Make the API call   
+    response = requests.post(endpoint, headers=headers, data=json.dumps(data))   
+
+    print(f"Status Code: {response.status_code}")   
+    print("-----")
+    gpt_response = response.json()['choices'][0]['message']['content']
+    print(gpt_response)
+    print("-----")
+    print(user_prompt)
+
+    # return render_template('vision_response.html', user_prompt=prompt, gpt_response=gpt_response, image_filename=image_filename)
+    return jsonify({'gpt_response': gpt_response,
+                    'image_data': image_data,
+                    'user_prompt': user_prompt
+                    })
     
 
 
